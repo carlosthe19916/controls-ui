@@ -3,5 +3,28 @@
         "applicationInventory": "Application inventory",
         "reports": "Reports",
         "controls": "Controls"
+    },
+    "actions": {
+        "createNew": "Create new",
+        "delete": "Delete",
+        "cancel": "Cancel"
+    },
+    "dialog": {
+        "title": {
+            "delete": "Delete '{{what}}'"
+        },
+        "message": {
+            "delete": "Are you sure you want to delete '{{what}}'? This will delete all resources associated with it and cannot be undone. Make sure this is something you really want to do!"
+        }
+    },
+    "terms": {
+        "controls": "Controls",
+        "businessServices": "Business services",
+        "stakeholders": "Stakeholders",
+        "stakeholderGroups": "Stakeholder groups",
+        "tags": "Tags",
+        "name": "Name",
+        "description": "Description",
+        "owner": "Owner"
     }
 }

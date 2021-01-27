@@ -3,5 +3,28 @@
         "applicationInventory": "Inventario de aplicaciones",
         "reports": "Reportes",
         "controls": "Controles"
+    },
+    "actions": {
+        "createNew": "Crear nuevo",
+        "delete": "Eliminar",
+        "cancel": "Cancelar"
+    },
+    "dialog": {
+        "title": {
+            "delete": "Eliminar '{{what}}'"
+        },
+        "message": {
+            "delete": "¿Estás seguro de querer eliminar '{{what}}'?. Esta acción eliminará todos los recursos asociados al mismo y no puede ser revertida. ¡Asegúrate de que esto es lo que realmente quieres!"
+        }
+    },
+    "terms": {
+        "controls": "Controles",
+        "businessServices": "Servicios de negocio",
+        "stakeholders": "Interesados",
+        "stakeholderGroups": "Grupos de interesados",
+        "tags": "Etiquetas",
+        "name": "Nombre",
+        "description": "Descripción",
+        "owner": "Propietario"
     }
 }

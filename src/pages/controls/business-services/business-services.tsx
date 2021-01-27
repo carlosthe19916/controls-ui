@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import {
   Button,
   ButtonVariant,
@@ -22,7 +24,9 @@ import {
 } from "@patternfly/react-table";
 import { AddCircleOIcon } from "@patternfly/react-icons";
 
-import { BusinessService, PageQuery, SortByQuery } from "api/models";
+import { useDispatch } from "react-redux";
+import { alertActions } from "store/alert";
+import { confirmDialogActions } from "store/confirmDialog";
 
 import {
   AppPlaceholder,
@@ -30,13 +34,14 @@ import {
   AppTableWithControls,
   SearchInput,
 } from "shared/components";
-import { useTableControls, useFetchBusinessServices } from "shared/hooks";
+import {
+  useTableControls,
+  useFetchBusinessServices,
+  useDeleteBusinessService,
+} from "shared/hooks";
 
-const columns: ICell[] = [
-  { title: "Name", transforms: [sortable] },
-  { title: "Description" },
-  { title: "Owner", transforms: [sortable] },
-];
+import { BusinessService, PageQuery, SortByQuery } from "api/models";
+import { getAxiosErrorMessage } from "utils/utils";
 
 const columnIndexToField = (
   _: React.MouseEvent,
@@ -78,7 +83,13 @@ const itemsToRow = (items: BusinessService[]) => {
 };
 
 export const BusinessServices: React.FC = () => {
+  const dispatch = useDispatch();
+
+  const { t } = useTranslation();
+
   const [filterText, setFilterText] = useState("");
+
+  const { deleteBusinessService } = useDeleteBusinessService();
 
   const {
     businessServices,
@@ -106,9 +117,15 @@ export const BusinessServices: React.FC = () => {
     reloadTable(filterText, paginationQuery, sortByQuery);
   }, [filterText, paginationQuery, sortByQuery, reloadTable]);
 
+  const columns: ICell[] = [
+    { title: t("terms.name"), transforms: [sortable] },
+    { title: t("terms.description") },
+    { title: t("terms.owner"), transforms: [sortable] },
+  ];
+
   const actions: IActions = [
     {
-      title: "Edit",
+      title: t("actions.delete"),
       onClick: (
         event: React.MouseEvent,
         rowIndex: number,
@@ -116,19 +133,36 @@ export const BusinessServices: React.FC = () => {
         extraData: IExtraData
       ) => {
         const row: BusinessService = getRow(rowData);
-        console.log(row);
-      },
-    },
-    {
-      title: "Delete",
-      onClick: (
-        event: React.MouseEvent,
-        rowIndex: number,
-        rowData: IRowData,
-        extraData: IExtraData
-      ) => {
-        const row: BusinessService = getRow(rowData);
-        console.log(row);
+
+        dispatch(
+          confirmDialogActions.openDialog({
+            title: t("dialog.title.delete", { what: row.name }),
+            message: t("dialog.message.delete", { what: row.name }),
+            variant: ButtonVariant.danger,
+            confirmBtnLabel: t("actions.delete"),
+            cancelBtnLabel: t("actions.cancel"),
+            onConfirm: () => {
+              dispatch(confirmDialogActions.processing());
+              deleteBusinessService(
+                row,
+                () => {
+                  dispatch(confirmDialogActions.closeDialog());
+                  reloadTable(filterText, paginationQuery, sortByQuery);
+                },
+                (error) => {
+                  dispatch(confirmDialogActions.closeDialog());
+                  dispatch(
+                    alertActions.addAlert(
+                      "danger",
+                      "Error",
+                      getAxiosErrorMessage(error)
+                    )
+                  );
+                }
+              );
+            },
+          })
+        );
       },
     },
   ];
@@ -161,7 +195,7 @@ export const BusinessServices: React.FC = () => {
           isLoading={isFetching}
           loadingVariant="skeleton"
           fetchError={fetchError}
-          filtersApplied={false}
+          filtersApplied={filterText.length > 0}
           toolbar={
             <>
               <ToolbarGroup>
@@ -177,7 +211,7 @@ export const BusinessServices: React.FC = () => {
                     variant={ButtonVariant.primary}
                     onClick={handleOnCreateNew}
                   >
-                    Create new
+                    {t("actions.createNew")}
                   </Button>
                 </ToolbarItem>
               </ToolbarGroup>

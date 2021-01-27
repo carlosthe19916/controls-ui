@@ -9,6 +9,8 @@ import { DefaultLayout } from "./layout";
 import NotificationsPortal from "@redhat-cloud-services/frontend-components-notifications/cjs/NotificationPortal";
 import "@redhat-cloud-services/frontend-components-notifications/index.css";
 
+import { ConfirmDialogContainer } from "./shared/containers/confirm-dialog-container";
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -16,6 +18,7 @@ const App: React.FC = () => {
         <AppRoutes />
       </DefaultLayout>
       <NotificationsPortal />
+      <ConfirmDialogContainer />
     </BrowserRouter>
   );
 };

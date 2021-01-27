@@ -40,3 +40,7 @@ export const getBusinessServices = (
 
   return APIClient.get(`${BUSINESS_SERVICES}?${query.join("&")}`, { headers });
 };
+
+export const deleteBusinessService = (id: number): AxiosPromise => {
+  return APIClient.delete(`${BUSINESS_SERVICES}/${id}`);
+};

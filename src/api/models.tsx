@@ -18,8 +18,9 @@ export interface Meta {
 }
 
 export interface BusinessService {
+  id: number;
   name: string;
-  description: string;
+  description?: string;
   owner: Owner;
 }
 

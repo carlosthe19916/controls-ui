@@ -4,32 +4,30 @@ import { useTranslation } from "react-i18next";
 import { AppPageSection, PageHeader } from "shared/components";
 import { Paths } from "Paths";
 
-import { controlsPage } from "./controls-utils";
-
 export const EditCompanyHeader: React.FC = () => {
-  const { t } = useTranslation(controlsPage);
+  const { t } = useTranslation();
 
   return (
     <AppPageSection>
       <PageHeader
-        title={t("title")}
+        title={t("terms.controls")}
         breadcrumbs={[]}
         menuActions={[]}
         navItems={[
           {
-            title: t("tabs.businessServices"),
+            title: t("terms.businessServices"),
             path: Paths.controls_businessServices,
           },
           {
-            title: t("tabs.stakeholders"),
+            title: t("terms.stakeholders"),
             path: Paths.controls_stakeholders,
           },
           {
-            title: t("tabs.stakeholderGroups"),
+            title: t("terms.stakeholderGroups"),
             path: Paths.controls_stakeholderGroups,
           },
           {
-            title: t("tabs.tags"),
+            title: t("terms.tags"),
             path: Paths.controls_tags,
           },
         ]}

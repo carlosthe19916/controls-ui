@@ -4,27 +4,28 @@
         "reports": "Reportes",
         "controls": "Controles"
     },
-    "actions": {
-        "createNew": "Crear nuevo",
-        "delete": "Eliminar",
-        "cancel": "Cancelar"
-    },
-    "dialog": {
-        "title": {
-            "delete": "Eliminar '{{what}}'"
-        },
-        "message": {
-            "delete": "¿Estás seguro de querer eliminar '{{what}}'?. Esta acción eliminará todos los recursos asociados al mismo y no puede ser revertida. ¡Asegúrate de que esto es lo que realmente quieres!"
-        }
-    },
     "terms": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "owner": "Propietario",
         "controls": "Controles",
         "businessServices": "Servicios de negocio",
         "stakeholders": "Interesados",
         "stakeholderGroups": "Grupos de interesados",
-        "tags": "Etiquetas",
-        "name": "Nombre",
-        "description": "Descripción",
-        "owner": "Propietario"
+        "tags": "Etiquetas"
+    },
+    "actions": {
+        "delete": "Eliminar",
+        "cancel": "Cancelar",
+        "createNew": "Crear nuevo"
+    },
+    "dialog": {
+        "title": {
+            "delete": "Eliminar '{{what}}'",
+            "newBusinessService": "Nuevo servicio de negocio"
+        },
+        "message": {
+            "delete": "¿Estás seguro de querer eliminar '{{what}}'?. Esta acción eliminará todos los recursos asociados al mismo y no puede ser revertida. ¡Asegúrate de que esto es lo que realmente quieres!"
+        }
     }
 }

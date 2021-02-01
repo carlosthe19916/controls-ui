@@ -1,12 +1,21 @@
 import { AxiosPromise } from "axios";
 import { APIClient } from "axios-config";
 
-import { BusinessServicePage, PageQuery, SortByQuery } from "./models";
+import {
+  BusinessService,
+  BusinessServicePage,
+  PageQuery,
+  SortByQuery,
+  StakeholderPage,
+} from "./models";
 
 export const BASE_URL = "controls";
 export const BUSINESS_SERVICES = BASE_URL + "/business-service";
+export const STAKEHOLDERS = BASE_URL + "/stakeholder";
 
 const headers = { Accept: "application/hal+json" };
+
+// Business services
 
 export const getBusinessServices = (
   filters: {
@@ -43,4 +52,49 @@ export const getBusinessServices = (
 
 export const deleteBusinessService = (id: number): AxiosPromise => {
   return APIClient.delete(`${BUSINESS_SERVICES}/${id}`);
+};
+
+export const createBusinessService = (
+  obj: BusinessService
+): AxiosPromise<BusinessService> => {
+  return APIClient.post(BUSINESS_SERVICES, obj);
+};
+
+// Stakeholders
+
+export const getAllStakeholders = (): AxiosPromise<StakeholderPage> => {
+  return APIClient.get(`${STAKEHOLDERS}?size=1000`, { headers });
+};
+
+export const getStakeholders = (
+  filters: {
+    filterText?: string;
+  },
+  pagination: PageQuery,
+  sortBy?: SortByQuery
+): AxiosPromise<StakeholderPage> => {
+  let sortByQuery: string | undefined = undefined;
+  if (sortBy) {
+    sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
+      sortBy.orderBy
+    }`;
+  }
+
+  const query: string[] = [];
+
+  //
+  const params = {
+    page: pagination.page - 1,
+    size: pagination.perPage,
+    sort: sortByQuery,
+    filter: filters.filterText,
+  };
+  Object.keys(params).forEach((key) => {
+    const value = (params as any)[key];
+    if (value !== undefined) {
+      query.push(`${key}=${value}`);
+    }
+  });
+
+  return APIClient.get(`${STAKEHOLDERS}?${query.join("&")}`, { headers });
 };

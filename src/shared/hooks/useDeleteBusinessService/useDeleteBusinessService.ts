@@ -22,6 +22,12 @@ export const useDeleteBusinessService = (): IState => {
       onSuccess: () => void,
       onError: (error: AxiosError) => void
     ) => {
+      if (!businessService.id) {
+        throw new Error(
+          "BusinessService must have 'id' to execute this operation"
+        );
+      }
+
       setIsDeleting(true);
       deleteBusinessService(businessService.id)
         .then(() => {

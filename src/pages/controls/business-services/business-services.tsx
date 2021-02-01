@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { AxiosError, AxiosResponse } from "axios";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -8,6 +9,8 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
+  Modal,
+  ModalVariant,
   PageSection,
   Title,
   ToolbarGroup,
@@ -42,6 +45,7 @@ import {
 
 import { BusinessService, PageQuery, SortByQuery } from "api/models";
 import { getAxiosErrorMessage } from "utils/utils";
+import { NewBusinessServiceForm } from "./components/new-business-service-form";
 
 const columnIndexToField = (
   _: React.MouseEvent,
@@ -76,7 +80,7 @@ const itemsToRow = (items: BusinessService[]) => {
         title: item.description,
       },
       {
-        title: item.owner ? `${item.owner.name} ${item.owner.surname}` : "",
+        title: item.owner?.displayName,
       },
     ],
   }));
@@ -88,6 +92,7 @@ export const BusinessServices: React.FC = () => {
   const { t } = useTranslation();
 
   const [filterText, setFilterText] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { deleteBusinessService } = useDeleteBusinessService();
 
@@ -173,7 +178,23 @@ export const BusinessServices: React.FC = () => {
   };
 
   const handleOnCreateNew = () => {
-    console.log("Create new");
+    setIsModalOpen(true);
+  };
+
+  const handleOnModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleOnBusinessServiceSaved = (
+    response: AxiosResponse<BusinessService>
+  ) => {
+    handleOnModalClose();
+    reloadTable(filterText, paginationQuery, sortByQuery);
+  };
+
+  const onBusinessServiceSaveError = (error: AxiosError) => {
+    handleOnModalClose();
+    alertActions.addAlert("danger", "Error", getAxiosErrorMessage(error));
   };
 
   return (
@@ -221,16 +242,27 @@ export const BusinessServices: React.FC = () => {
             <EmptyState variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={AddCircleOIcon} />
               <Title headingLevel="h2" size="lg">
-                No entities available
+                No business services available
               </Title>
               <EmptyStateBody>
-                Start importing entities going to the <strong>Versions</strong>{" "}
-                menu.
+                Create a new business service to start seeing data here.
               </EmptyStateBody>
             </EmptyState>
           }
         />
       </ConditionalRender>
+      <Modal
+        title={t("dialog.title.newBusinessService")}
+        variant={ModalVariant.medium}
+        isOpen={isModalOpen}
+        onClose={handleOnModalClose}
+      >
+        <NewBusinessServiceForm
+          onSaved={handleOnBusinessServiceSaved}
+          onSaveError={onBusinessServiceSaveError}
+          onCancel={handleOnModalClose}
+        />
+      </Modal>
     </PageSection>
   );
 };

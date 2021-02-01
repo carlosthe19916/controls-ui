@@ -18,21 +18,27 @@ export interface Meta {
 }
 
 export interface BusinessService {
-  id: number;
+  id?: number;
   name: string;
   description?: string;
-  owner: Owner;
+  owner?: Stakeholder;
 }
 
-export interface Owner {
-  name: string;
-  surname: string;
+export interface Stakeholder {
+  displayName: string;
   email: string;
 }
 
 export interface BusinessServicePage {
   _embedded: {
     "business-service": BusinessService[];
+  };
+  total_count: number;
+}
+
+export interface StakeholderPage {
+  _embedded: {
+    stakeholder: Stakeholder[];
   };
   total_count: number;
 }

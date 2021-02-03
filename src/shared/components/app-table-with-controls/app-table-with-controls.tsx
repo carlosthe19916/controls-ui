@@ -5,6 +5,7 @@ import {
   ToolbarContent,
   ToolbarItem,
   ToolbarItemVariant,
+  ToolbarToggleGroup,
 } from "@patternfly/react-core";
 import {
   IActions,
@@ -16,6 +17,7 @@ import {
   ISortBy,
   SortByDirection,
 } from "@patternfly/react-table";
+import { FilterIcon } from "@patternfly/react-icons";
 
 import { AppTable } from "../app-table/app-table";
 import { SimplePagination } from "../simple-pagination";
@@ -54,6 +56,8 @@ export interface AppTableWithControlsProps {
   fetchError?: any;
 
   toolbar?: any;
+  toolbarToggle?: any;
+  clearAllFilters?: () => void;
 
   filtersApplied: boolean;
   noDataState?: any;
@@ -81,6 +85,8 @@ export const AppTableWithControls: React.FC<AppTableWithControlsProps> = ({
   loadingVariant,
 
   toolbar,
+  toolbarToggle,
+  clearAllFilters,
 
   filtersApplied,
   noDataState,
@@ -91,8 +97,17 @@ export const AppTableWithControls: React.FC<AppTableWithControlsProps> = ({
 
   return (
     <div style={{ backgroundColor: "var(--pf-global--BackgroundColor--100)" }}>
-      <Toolbar>
+      <Toolbar
+        className="pf-m-toggle-group-container"
+        collapseListedFiltersBreakpoint="xl"
+        clearAllFilters={clearAllFilters}
+      >
         <ToolbarContent>
+          {toolbarToggle && (
+            <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
+              {toolbarToggle}
+            </ToolbarToggleGroup>
+          )}
           {toolbar}
           <ToolbarItem
             variant={ToolbarItemVariant.pagination}

@@ -7,7 +7,11 @@ describe("SimpleFilterDropdown", () => {
     const wrapper = shallow(
       <SimpleFilterDropdown
         label="My label"
-        options={["option1", "option2", "option3"]}
+        options={[
+          { key: "option1", name: "Option 1" },
+          { key: "option2", name: "Option 2" },
+          { key: "option3", name: "Option 3" },
+        ]}
         onSelect={jest.fn()}
       />
     );
@@ -20,7 +24,11 @@ describe("SimpleFilterDropdown", () => {
     const wrapper = mount(
       <SimpleFilterDropdown
         label="My label"
-        options={["option1", "option2", "option3"]}
+        options={[
+          { key: "option1", name: "Option 1" },
+          { key: "option2", name: "Option 2" },
+          { key: "option3", name: "Option 3" },
+        ]}
         onSelect={onSelectSpy}
       />
     );
@@ -31,6 +39,9 @@ describe("SimpleFilterDropdown", () => {
 
     // Select option
     wrapper.find(".pf-c-dropdown__menu-item").at(1).simulate("click");
-    expect(onSelectSpy).toHaveBeenCalledWith("option2");
+    expect(onSelectSpy).toHaveBeenCalledWith({
+      key: "option2",
+      name: "Option 2",
+    });
   });
 });

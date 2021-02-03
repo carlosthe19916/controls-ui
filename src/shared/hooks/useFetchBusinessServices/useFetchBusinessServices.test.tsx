@@ -31,9 +31,7 @@ describe("useFetchBusinessServices", () => {
     expect(fetchError).toBeUndefined();
 
     // Init fetch
-    act(() =>
-      fetchBusinessServices({ filterText: "" }, { page: 2, perPage: 50 })
-    );
+    act(() => fetchBusinessServices({}, { page: 2, perPage: 50 }));
     expect(result.current.isFetching).toBe(true);
 
     // Fetch finished
@@ -74,10 +72,7 @@ describe("useFetchBusinessServices", () => {
 
     // Init fetch
     act(() =>
-      fetchBusinessServices(
-        { filterText: "something" },
-        { page: 1, perPage: 10 }
-      )
+      fetchBusinessServices({ name: ["something"] }, { page: 1, perPage: 10 })
     );
     expect(result.current.isFetching).toBe(true);
 

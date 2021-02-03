@@ -8,19 +8,19 @@ exports[`SimpleFilterDropdown Renders without crashing 1`] = `
         component="button"
         onClick={[Function]}
       >
-        option1
+        Option 1
       </DropdownItem>,
       <DropdownItem
         component="button"
         onClick={[Function]}
       >
-        option2
+        Option 2
       </DropdownItem>,
       <DropdownItem
         component="button"
         onClick={[Function]}
       >
-        option3
+        Option 3
       </DropdownItem>,
     ]
   }
@@ -36,6 +36,7 @@ exports[`SimpleFilterDropdown Renders without crashing 1`] = `
         noVerticalAlign={false}
         size="sm"
       />
+       
       My label
     </DropdownToggle>
   }

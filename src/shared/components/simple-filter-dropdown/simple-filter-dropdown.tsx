@@ -7,10 +7,15 @@ import {
 } from "@patternfly/react-core";
 import { FilterIcon } from "@patternfly/react-icons";
 
+export interface DropdownOption {
+  key: string;
+  name: React.ReactNode;
+}
+
 export interface SimpleFilterDropdownProps {
-  label: string;
-  options: string[];
-  onSelect: (value: string) => void;
+  label: React.ReactNode;
+  options: DropdownOption[];
+  onSelect: (key: DropdownOption) => void;
 }
 
 export const SimpleFilterDropdown: React.FC<SimpleFilterDropdownProps> = ({
@@ -35,17 +40,16 @@ export const SimpleFilterDropdown: React.FC<SimpleFilterDropdownProps> = ({
       onSelect={handleOnSelect}
       toggle={
         <DropdownToggle onToggle={handleOnToggle}>
-          <FilterIcon />
-          {label}
+          <FilterIcon /> {label}
         </DropdownToggle>
       }
-      dropdownItems={options.map((f, index) => (
+      dropdownItems={options.map((elem, index) => (
         <DropdownItem
           key={index}
           component="button"
-          onClick={() => onSelect(f)}
+          onClick={() => onSelect(elem)}
         >
-          {f}
+          {elem.name}
         </DropdownItem>
       ))}
     />

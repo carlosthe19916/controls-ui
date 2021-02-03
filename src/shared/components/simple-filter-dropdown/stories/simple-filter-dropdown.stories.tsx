@@ -19,6 +19,10 @@ const Template: Story<SimpleFilterDropdownProps> = (args) => (
 
 export const Basic = Template.bind({});
 Basic.args = {
-  label: "option1",
-  options: ["option1", "option2", "option3"],
+  label: "Select an option",
+  options: [
+    { key: "option1", name: "Option 1" },
+    { key: "option2", name: "Option 2" },
+    { key: "option3", name: "Option 3" },
+  ],
 };

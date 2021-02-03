@@ -19,7 +19,9 @@ const headers = { Accept: "application/hal+json" };
 
 export const getBusinessServices = (
   filters: {
-    filterText?: string;
+    name?: string[];
+    description?: string[];
+    owner?: string[];
   },
   pagination: PageQuery,
   sortBy?: SortByQuery
@@ -34,16 +36,26 @@ export const getBusinessServices = (
   const query: string[] = [];
 
   //
+
   const params = {
     page: pagination.page - 1,
     size: pagination.perPage,
     sort: sortByQuery,
-    name: filters.filterText,
+    name: filters.name,
+    description: filters.description,
+    "owner.displayName": filters.owner,
   };
   Object.keys(params).forEach((key) => {
     const value = (params as any)[key];
-    if (value !== undefined) {
-      query.push(`${key}=${value}`);
+
+    if (value !== undefined && value !== null) {
+      let queryParamValues: string[] = [];
+      if (Array.isArray(value)) {
+        queryParamValues = value;
+      } else {
+        queryParamValues = [value];
+      }
+      queryParamValues.forEach((v) => query.push(`${key}=${v}`));
     }
   });
 

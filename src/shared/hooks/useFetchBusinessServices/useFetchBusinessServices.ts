@@ -79,7 +79,9 @@ export interface IState {
   fetchCount: number;
   fetchBusinessServices: (
     filters: {
-      filterText?: string;
+      name?: string[];
+      description?: string[];
+      owner?: string[];
     },
     page: PageQuery,
     sortBy?: SortByQuery
@@ -93,7 +95,7 @@ export const useFetchBusinessServices = (
 
   const fetchBusinessServices = useCallback(
     (
-      filters: { filterText?: string },
+      filters: { name?: string[]; description?: string[]; owner?: string[] },
       page: PageQuery,
       sortBy?: SortByQuery
     ) => {

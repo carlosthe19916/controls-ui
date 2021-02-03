@@ -40,7 +40,7 @@ import {
   useDeleteBusinessService,
 } from "shared/hooks";
 
-import { BusinessService, PageQuery, SortByQuery } from "api/models";
+import { BusinessService } from "api/models";
 import { getAxiosErrorMessage } from "utils/utils";
 
 import { NewBusinessServiceModal } from "./components/new-business-service-modal";
@@ -49,6 +49,12 @@ import {
   FilterOption,
   SearchFilter,
 } from "./components/search-filter/search-filter";
+
+enum FilterKey {
+  NAME = "name",
+  DESCRIPTION = "description",
+  OWNER = "owner",
+}
 
 const columnIndexToField = (_: React.MouseEvent, index: number) => {
   switch (index) {
@@ -87,22 +93,15 @@ const itemsToRow = (items: BusinessService[]) => {
 };
 
 export const BusinessServices: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const { t } = useTranslation();
+  const [nameFilters, setNameFilters] = useState<string[]>([]);
+  const [descriptionFilters, setDescriptionFilters] = useState<string[]>([]);
+  const [ownerFilters, setOwnerFilters] = useState<string[]>([]);
 
-  const [filterByName, setFilterByName] = useState<string[]>([]);
-  const [filterByDescription, setFilterByDescription] = useState<string[]>([]);
-  const [filterByOwner, setFilterByOwner] = useState<string[]>([]);
-
-  const [
-    isNewBusinessServiceModalOpen,
-    setIsNewBusinessServiceModalOpen,
-  ] = useState(false);
-  const [
-    businessServiceToUpdate,
-    setbusinessServiceToUpdate,
-  ] = useState<BusinessService>();
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [rowToUpdate, setRowToUpdate] = useState<BusinessService>();
 
   const { deleteBusinessService } = useDeleteBusinessService();
 
@@ -121,42 +120,42 @@ export const BusinessServices: React.FC = () => {
     handleSortChange,
   } = useTableControls({ columnToField: columnIndexToField });
 
-  const reloadTable = useCallback(
-    (
-      filters: { name?: string[]; description?: string[]; owner?: string[] },
-      pagination: PageQuery,
-      sortBy?: SortByQuery
-    ) => {
-      fetchBusinessServices(
-        {
-          name: filters.name,
-          description: filters.description,
-          owner: filters.owner,
-        },
-        pagination,
-        sortBy
-      );
-    },
-    [fetchBusinessServices]
-  );
-
-  useEffect(() => {
-    reloadTable(
+  const refreshTable = useCallback(() => {
+    fetchBusinessServices(
       {
-        name: filterByName,
-        description: filterByDescription,
-        owner: filterByOwner,
+        name: nameFilters,
+        description: descriptionFilters,
+        owner: ownerFilters,
       },
       paginationQuery,
       sortByQuery
     );
   }, [
-    filterByName,
-    filterByDescription,
-    filterByOwner,
+    nameFilters,
+    descriptionFilters,
+    ownerFilters,
     paginationQuery,
     sortByQuery,
-    reloadTable,
+    fetchBusinessServices,
+  ]);
+
+  useEffect(() => {
+    fetchBusinessServices(
+      {
+        name: nameFilters,
+        description: descriptionFilters,
+        owner: ownerFilters,
+      },
+      paginationQuery,
+      sortByQuery
+    );
+  }, [
+    nameFilters,
+    descriptionFilters,
+    ownerFilters,
+    paginationQuery,
+    sortByQuery,
+    fetchBusinessServices,
   ]);
 
   const columns: ICell[] = [
@@ -174,7 +173,7 @@ export const BusinessServices: React.FC = () => {
         rowData: IRowData
       ) => {
         const row: BusinessService = getRow(rowData);
-        setbusinessServiceToUpdate(row);
+        setRowToUpdate(row);
       },
     },
     {
@@ -199,15 +198,7 @@ export const BusinessServices: React.FC = () => {
                 row,
                 () => {
                   dispatch(confirmDialogActions.closeDialog());
-                  reloadTable(
-                    {
-                      name: filterByName,
-                      description: filterByDescription,
-                      owner: filterByOwner,
-                    },
-                    paginationQuery,
-                    sortByQuery
-                  );
+                  refreshTable();
                 },
                 (error) => {
                   dispatch(confirmDialogActions.closeDialog());
@@ -227,38 +218,38 @@ export const BusinessServices: React.FC = () => {
     },
   ];
 
-  //
+  // Advanced filters
 
   const filterOptions: FilterOption[] = [
     {
-      key: "name",
+      key: FilterKey.NAME,
       name: t("terms.name"),
     },
     {
-      key: "description",
+      key: FilterKey.DESCRIPTION,
       name: t("terms.description"),
     },
     {
-      key: "owner",
+      key: FilterKey.OWNER,
       name: t("terms.owner"),
     },
   ];
 
   const handleOnClearAllFilters = () => {
-    setFilterByName([]);
-    setFilterByDescription([]);
-    setFilterByOwner([]);
+    setNameFilters([]);
+    setDescriptionFilters([]);
+    setOwnerFilters([]);
   };
 
   const handleOnFilterApplied = (key: string, filterText: string) => {
-    if (key === "name") {
-      setFilterByName([...filterByName, filterText]);
-    } else if (key === "description") {
-      setFilterByDescription([...filterByDescription, filterText]);
-    } else if (key === "owner") {
-      setFilterByOwner([...filterByOwner, filterText]);
+    if (key === FilterKey.NAME) {
+      setNameFilters([...nameFilters, filterText]);
+    } else if (key === FilterKey.DESCRIPTION) {
+      setDescriptionFilters([...descriptionFilters, filterText]);
+    } else if (key === FilterKey.OWNER) {
+      setOwnerFilters([...ownerFilters, filterText]);
     } else {
-      throw new Error("Filter not supported");
+      throw new Error("Can not apply filter " + key + ". It's not supported");
     }
 
     handlePaginationChange({ page: 1 });
@@ -268,74 +259,73 @@ export const BusinessServices: React.FC = () => {
     category: string | ToolbarChipGroup,
     chip: ToolbarChip | string
   ) => {
-    if (category === "name") {
-      setFilterByName(filterByName.filter((f) => f !== chip));
-    } else if (category === "description") {
-      setFilterByDescription(filterByDescription.filter((f) => f !== chip));
-    } else if (category === "owner") {
-      setFilterByOwner(filterByOwner.filter((f) => f !== chip));
+    if (typeof chip !== "string") {
+      throw new Error("Can not delete filter. Chip must be a string");
+    }
+
+    let categoryKey: string;
+    if (typeof category === "string") {
+      categoryKey = category;
     } else {
-      throw new Error("Filter not supported");
+      categoryKey = category.key;
+    }
+
+    if (categoryKey === FilterKey.NAME) {
+      setNameFilters(nameFilters.filter((f) => f !== chip));
+    } else if (categoryKey === FilterKey.DESCRIPTION) {
+      setDescriptionFilters(descriptionFilters.filter((f) => f !== chip));
+    } else if (categoryKey === FilterKey.OWNER) {
+      setOwnerFilters(ownerFilters.filter((f) => f !== chip));
+    } else {
+      throw new Error(
+        "Can not delete chip. Chip " + chip + " is not supported"
+      );
     }
   };
 
   const handleOnDeleteFilterGroup = (category: string | ToolbarChipGroup) => {
+    let categoryKey: string;
     if (typeof category === "string") {
-      throw new Error("Category must be a ToolbarChipGroup and not a string");
-    }
-
-    if (category.key === "name") {
-      setFilterByName([]);
-    } else if (category.key === "description") {
-      setFilterByDescription([]);
-    } else if (category.key === "owner") {
-      setFilterByOwner([]);
+      categoryKey = category;
     } else {
-      throw new Error("Filter not supported");
+      categoryKey = category.key;
+    }
+
+    if (categoryKey === FilterKey.NAME) {
+      setNameFilters([]);
+    } else if (categoryKey === FilterKey.DESCRIPTION) {
+      setDescriptionFilters([]);
+    } else if (categoryKey === FilterKey.OWNER) {
+      setOwnerFilters([]);
+    } else {
+      throw new Error("Can not delete ChipGroup. ChipGroup is not supported");
     }
   };
 
-  //
+  // Create Modal
+
   const handleOnOpenCreateNewBusinessServiceModal = () => {
-    setIsNewBusinessServiceModalOpen(true);
-  };
-
-  //
-
-  const handleOnCancelCreateBusinessService = () => {
-    setIsNewBusinessServiceModalOpen(false);
+    setIsNewModalOpen(true);
   };
 
   const handleOnBusinessServiceCreated = () => {
-    setIsNewBusinessServiceModalOpen(false);
-    reloadTable(
-      {
-        name: filterByName,
-        description: filterByDescription,
-        owner: filterByOwner,
-      },
-      paginationQuery,
-      sortByQuery
-    );
+    setIsNewModalOpen(false);
+    refreshTable();
   };
 
-  //
+  const handleOnCancelCreateBusinessService = () => {
+    setIsNewModalOpen(false);
+  };
+
+  // Update Modal
 
   const handleOnBusinessServiceUpdated = () => {
-    setbusinessServiceToUpdate(undefined);
-    reloadTable(
-      {
-        name: filterByName,
-        description: filterByDescription,
-        owner: filterByOwner,
-      },
-      paginationQuery,
-      sortByQuery
-    );
+    setRowToUpdate(undefined);
+    refreshTable();
   };
 
   const handleOnCancelUpdateBusinessService = () => {
-    setbusinessServiceToUpdate(undefined);
+    setRowToUpdate(undefined);
   };
 
   return (
@@ -359,28 +349,28 @@ export const BusinessServices: React.FC = () => {
           fetchError={fetchError}
           clearAllFilters={handleOnClearAllFilters}
           filtersApplied={
-            filterByName.length +
-              filterByDescription.length +
-              filterByOwner.length >
+            nameFilters.length +
+              descriptionFilters.length +
+              ownerFilters.length >
             0
           }
           toolbarToggle={
             <ToolbarGroup variant="filter-group">
               <ToolbarFilter
-                chips={filterByName}
+                chips={nameFilters}
                 deleteChip={handleOnDeleteFilter}
                 deleteChipGroup={handleOnDeleteFilterGroup}
-                categoryName={{ key: "name", name: t("terms.name") }}
+                categoryName={{ key: FilterKey.NAME, name: t("terms.name") }}
                 showToolbarItem
               >
                 {null}
               </ToolbarFilter>
               <ToolbarFilter
-                chips={filterByDescription}
+                chips={descriptionFilters}
                 deleteChip={handleOnDeleteFilter}
                 deleteChipGroup={handleOnDeleteFilterGroup}
                 categoryName={{
-                  key: "description",
+                  key: FilterKey.DESCRIPTION,
                   name: t("terms.description"),
                 }}
                 showToolbarItem
@@ -388,10 +378,10 @@ export const BusinessServices: React.FC = () => {
                 {null}
               </ToolbarFilter>
               <ToolbarFilter
-                chips={filterByOwner}
+                chips={ownerFilters}
                 deleteChip={handleOnDeleteFilter}
                 deleteChipGroup={handleOnDeleteFilterGroup}
-                categoryName={{ key: "owner", name: t("terms.owner") }}
+                categoryName={{ key: FilterKey.OWNER, name: t("terms.owner") }}
                 showToolbarItem
               >
                 <SearchFilter
@@ -430,12 +420,12 @@ export const BusinessServices: React.FC = () => {
       </ConditionalRender>
 
       <NewBusinessServiceModal
-        isOpen={isNewBusinessServiceModalOpen}
+        isOpen={isNewModalOpen}
         onSaved={handleOnBusinessServiceCreated}
         onCancel={handleOnCancelCreateBusinessService}
       />
       <UpdateBusinessServiceModal
-        businessService={businessServiceToUpdate}
+        businessService={rowToUpdate}
         onSaved={handleOnBusinessServiceUpdated}
         onCancel={handleOnCancelUpdateBusinessService}
       />

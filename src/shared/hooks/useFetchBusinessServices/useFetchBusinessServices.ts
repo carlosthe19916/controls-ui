@@ -3,12 +3,7 @@ import { AxiosError } from "axios";
 import { ActionType, createAsyncAction, getType } from "typesafe-actions";
 
 import { getBusinessServices } from "api/rest";
-import {
-  PageRepresentation,
-  BusinessService,
-  PageQuery,
-  SortByQuery,
-} from "api/models";
+import { PageRepresentation, BusinessService, PageQuery } from "api/models";
 
 export const {
   request: fetchRequest,
@@ -84,7 +79,10 @@ export interface IState {
       owner?: string[];
     },
     page: PageQuery,
-    sortBy?: SortByQuery
+    sortBy?: {
+      field: "name" | "owner";
+      direction?: "asc" | "desc";
+    }
   ) => void;
 }
 
@@ -97,7 +95,10 @@ export const useFetchBusinessServices = (
     (
       filters: { name?: string[]; description?: string[]; owner?: string[] },
       page: PageQuery,
-      sortBy?: SortByQuery
+      sortBy?: {
+        field: "name" | "owner";
+        direction?: "asc" | "desc";
+      }
     ) => {
       dispatch(fetchRequest());
 

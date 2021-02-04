@@ -65,14 +65,10 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         changed: true,
-        // sortByQuery: {
-        //   orderBy: action.payload.fieldName,
-        //   orderDirection: action.payload.direction,
-        // },
-        // sortBy: {
-        //   index: action.payload.index,
-        //   direction: action.payload.direction,
-        // },
+        sortByQuery: {
+          index: action.payload.index,
+          direction: action.payload.direction,
+        },
       };
     default:
       return state;
@@ -82,20 +78,13 @@ const reducer = (state: State, action: Action): State => {
 // Hook
 
 interface HookArgs {
-  columnToField: (
-    _: React.MouseEvent,
-    index: number,
-    direction: SortByDirection,
-    extraData: IExtraColumnData
-  ) => string;
-
-  sortBy?: ISortBy;
+  paginationQuery?: PageQuery;
+  sortByQuery?: SortByQuery;
 }
 
 interface HookState {
   paginationQuery: PageQuery;
   sortByQuery?: SortByQuery;
-  sortBy?: ISortBy;
   handlePaginationChange: (pagination: PaginationAction) => void;
   handleSortChange: (
     event: React.MouseEvent,
@@ -106,10 +95,14 @@ interface HookState {
 }
 
 export const useTableControls = ({
-  columnToField: columnIndexToField,
-  sortBy,
+  paginationQuery,
+  sortByQuery,
 }: HookArgs): HookState => {
-  const [state, dispatch] = useReducer(reducer, defaultState);
+  const [state, dispatch] = useReducer(reducer, {
+    ...defaultState,
+    ...paginationQuery,
+    ...sortByQuery,
+  });
 
   const handlePaginationChange = useCallback((pagination: PaginationAction) => {
     dispatch(setPagination(pagination));
@@ -129,7 +122,7 @@ export const useTableControls = ({
         })
       );
     },
-    [columnIndexToField]
+    []
   );
 
   return {

@@ -51,17 +51,6 @@ enum FilterKey {
   OWNER = "owner",
 }
 
-const columnIndexToField = (_: React.MouseEvent, index: number) => {
-  switch (index) {
-    case 0:
-      return "name";
-    case 2:
-      return "owner";
-    default:
-      throw new Error("Invalid column index=" + index);
-  }
-};
-
 const BUSINESS_SERVICE_FIELD = "businessService";
 
 // const getRow = (rowData: IRowData): BusinessService => {
@@ -91,12 +80,10 @@ export const BusinessServices: React.FC = () => {
   const {
     paginationQuery,
     sortByQuery,
-    sortBy,
     handlePaginationChange,
     handleSortChange,
   } = useTableControls({
-    columnToField: columnIndexToField,
-    sortBy: { direction: "asc", index: 0 },
+    sortByQuery: { direction: "asc", index: 0 },
   });
 
   const refreshTable = useCallback(() => {
@@ -107,7 +94,10 @@ export const BusinessServices: React.FC = () => {
         owner: ownerFilters,
       },
       paginationQuery,
-      sortByQuery
+      {
+        field: "name",
+        direction: sortByQuery?.direction,
+      }
     );
   }, [
     nameFilters,
@@ -366,7 +356,7 @@ export const BusinessServices: React.FC = () => {
           items={businessServices ? businessServices.data : []}
           itemsToRow={itemsToRow}
           pagination={paginationQuery}
-          sortBy={sortBy}
+          sortBy={sortByQuery}
           handlePaginationChange={handlePaginationChange}
           handleSortChange={handleSortChange}
           columns={columns}

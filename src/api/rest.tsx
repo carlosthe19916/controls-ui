@@ -24,14 +24,26 @@ export const getBusinessServices = (
     owner?: string[];
   },
   pagination: PageQuery,
-  sortBy?: SortByQuery
+  sortBy?: {
+    field: "name" | "owner";
+    direction?: "asc" | "desc";
+  }
 ): AxiosPromise<BusinessServicePage> => {
   let sortByQuery: string | undefined = undefined;
-  // if (sortBy) {
-  //   sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
-  //     sortBy.orderBy
-  //   }`;
-  // }
+  if (sortBy) {
+    let field;
+    switch (sortBy.field) {
+      case "name":
+        field = "name";
+        break;
+      case "owner":
+        field = "owner";
+        break;
+      default:
+        throw new Error("Could not define SortBy field name");
+    }
+    sortByQuery = `${sortBy.direction === "desc" ? "-" : ""}${field}`;
+  }
 
   const query: string[] = [];
 
@@ -92,11 +104,11 @@ export const getStakeholders = (
   sortBy?: SortByQuery
 ): AxiosPromise<StakeholderPage> => {
   let sortByQuery: string | undefined = undefined;
-  // if (sortBy) {
-  //   sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
-  //     sortBy.orderBy
-  //   }`;
-  // }
+  if (sortBy) {
+    sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
+      sortBy.orderBy
+    }`;
+  }
 
   const query: string[] = [];
 

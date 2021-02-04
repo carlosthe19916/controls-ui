@@ -13,21 +13,25 @@ interface PaginationAction {
   perPage?: number;
 }
 
-const setSortBy = createAction("app-table/sortBy/change")<{
+interface SortAction {
   index: number;
-  fieldName: string;
   direction: "asc" | "desc";
-}>();
+}
+
+// Actions
+
 const setPagination = createAction(
-  "app-table/pagination/change"
+  "tableControls/pagination/change"
 )<PaginationAction>();
 
+const setSortBy = createAction("tableControls/sortBy/change")<SortAction>();
+
+// State
 type State = Readonly<{
   changed: boolean;
 
   paginationQuery: PageQuery;
   sortByQuery?: SortByQuery;
-  sortBy?: ISortBy;
 }>;
 
 const defaultState: State = {
@@ -38,8 +42,9 @@ const defaultState: State = {
     perPage: 10,
   },
   sortByQuery: undefined,
-  sortBy: undefined,
 };
+
+// Reducer
 
 type Action = ActionType<typeof setSortBy | typeof setPagination>;
 
@@ -60,14 +65,14 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         changed: true,
-        sortByQuery: {
-          orderBy: action.payload.fieldName,
-          orderDirection: action.payload.direction,
-        },
-        sortBy: {
-          index: action.payload.index,
-          direction: action.payload.direction,
-        },
+        // sortByQuery: {
+        //   orderBy: action.payload.fieldName,
+        //   orderDirection: action.payload.direction,
+        // },
+        // sortBy: {
+        //   index: action.payload.index,
+        //   direction: action.payload.direction,
+        // },
       };
     default:
       return state;
@@ -104,26 +109,7 @@ export const useTableControls = ({
   columnToField: columnIndexToField,
   sortBy,
 }: HookArgs): HookState => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    sortBy
-      ? {
-          ...defaultState,
-          sortBy,
-          sortByQuery: {
-            orderBy: columnIndexToField(
-              null as any,
-              sortBy.index!,
-              sortBy.direction === "asc"
-                ? SortByDirection.asc
-                : SortByDirection.desc,
-              null as any
-            ),
-            orderDirection: sortBy.direction === "asc" ? "asc" : "desc",
-          },
-        }
-      : defaultState
-  );
+  const [state, dispatch] = useReducer(reducer, defaultState);
 
   const handlePaginationChange = useCallback((pagination: PaginationAction) => {
     dispatch(setPagination(pagination));
@@ -139,7 +125,6 @@ export const useTableControls = ({
       dispatch(
         setSortBy({
           index: index,
-          fieldName: columnIndexToField(event, index, direction, extraData),
           direction: direction,
         })
       );
@@ -150,7 +135,6 @@ export const useTableControls = ({
   return {
     paginationQuery: state.paginationQuery,
     sortByQuery: state.sortByQuery,
-    sortBy: state.sortBy,
     handlePaginationChange,
     handleSortChange,
   };

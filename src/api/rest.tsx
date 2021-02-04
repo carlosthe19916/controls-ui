@@ -27,11 +27,11 @@ export const getBusinessServices = (
   sortBy?: SortByQuery
 ): AxiosPromise<BusinessServicePage> => {
   let sortByQuery: string | undefined = undefined;
-  if (sortBy) {
-    sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
-      sortBy.orderBy
-    }`;
-  }
+  // if (sortBy) {
+  //   sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
+  //     sortBy.orderBy
+  //   }`;
+  // }
 
   const query: string[] = [];
 
@@ -92,11 +92,11 @@ export const getStakeholders = (
   sortBy?: SortByQuery
 ): AxiosPromise<StakeholderPage> => {
   let sortByQuery: string | undefined = undefined;
-  if (sortBy) {
-    sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
-      sortBy.orderBy
-    }`;
-  }
+  // if (sortBy) {
+  //   sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
+  //     sortBy.orderBy
+  //   }`;
+  // }
 
   const query: string[] = [];
 

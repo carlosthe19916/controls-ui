@@ -5,7 +5,6 @@ import {
   BusinessService,
   BusinessServicePage,
   PageQuery,
-  SortByQuery,
   StakeholderPage,
 } from "./models";
 
@@ -15,7 +14,18 @@ export const STAKEHOLDERS = BASE_URL + "/stakeholder";
 
 const headers = { Accept: "application/hal+json" };
 
+type Direction = "asc" | "desc";
+
 // Business services
+
+export enum BusinessServiceSortBy {
+  NAME,
+  OWNER,
+}
+export interface BusinessServiceSortByQuery {
+  field: BusinessServiceSortBy;
+  direction?: Direction;
+}
 
 export const getBusinessServices = (
   filters: {
@@ -24,19 +34,16 @@ export const getBusinessServices = (
     owner?: string[];
   },
   pagination: PageQuery,
-  sortBy?: {
-    field: "name" | "owner";
-    direction?: "asc" | "desc";
-  }
+  sortBy?: BusinessServiceSortByQuery
 ): AxiosPromise<BusinessServicePage> => {
   let sortByQuery: string | undefined = undefined;
   if (sortBy) {
     let field;
     switch (sortBy.field) {
-      case "name":
+      case BusinessServiceSortBy.NAME:
         field = "name";
         break;
-      case "owner":
+      case BusinessServiceSortBy.OWNER:
         field = "owner";
         break;
       default:
@@ -47,8 +54,6 @@ export const getBusinessServices = (
 
   const query: string[] = [];
 
-  //
-
   const params = {
     page: pagination.page - 1,
     size: pagination.perPage,
@@ -57,6 +62,7 @@ export const getBusinessServices = (
     description: filters.description,
     "owner.displayName": filters.owner,
   };
+
   Object.keys(params).forEach((key) => {
     const value = (params as any)[key];
 
@@ -92,27 +98,40 @@ export const updateBusinessService = (
 
 // Stakeholders
 
-export const getAllStakeholders = (): AxiosPromise<StakeholderPage> => {
-  return APIClient.get(`${STAKEHOLDERS}?size=1000`, { headers });
-};
+export enum StakeholderSortBy {
+  EMAIL,
+  DISPLAY_NAME,
+}
+export interface StakeholderSortByQuery {
+  field: StakeholderSortBy;
+  direction?: Direction;
+}
 
 export const getStakeholders = (
   filters: {
     filterText?: string;
   },
   pagination: PageQuery,
-  sortBy?: SortByQuery
+  sortBy?: StakeholderSortByQuery
 ): AxiosPromise<StakeholderPage> => {
   let sortByQuery: string | undefined = undefined;
   if (sortBy) {
-    sortByQuery = `${sortBy.orderDirection === "desc" ? "-" : ""}${
-      sortBy.orderBy
-    }`;
+    let field;
+    switch (sortBy.field) {
+      case StakeholderSortBy.EMAIL:
+        field = "email";
+        break;
+      case StakeholderSortBy.DISPLAY_NAME:
+        field = "displayName";
+        break;
+      default:
+        throw new Error("Could not define SortBy field name");
+    }
+    sortByQuery = `${sortBy.direction === "desc" ? "-" : ""}${field}`;
   }
 
   const query: string[] = [];
 
-  //
   const params = {
     page: pagination.page - 1,
     size: pagination.perPage,
@@ -127,4 +146,8 @@ export const getStakeholders = (
   });
 
   return APIClient.get(`${STAKEHOLDERS}?${query.join("&")}`, { headers });
+};
+
+export const getAllStakeholders = (): AxiosPromise<StakeholderPage> => {
+  return APIClient.get(`${STAKEHOLDERS}?size=1000`, { headers });
 };

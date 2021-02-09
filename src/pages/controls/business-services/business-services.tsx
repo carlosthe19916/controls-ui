@@ -36,7 +36,8 @@ import {
   useDeleteBusinessService,
 } from "shared/hooks";
 
-import { BusinessService } from "api/models";
+import { BusinessService, SortByQuery } from "api/models";
+import { BusinessServiceSortBy, BusinessServiceSortByQuery } from "api/rest";
 import { getAxiosErrorMessage } from "utils/utils";
 
 import { NewBusinessServiceModal } from "./components/new-business-service-modal";
@@ -51,6 +52,31 @@ enum FilterKey {
   DESCRIPTION = "description",
   OWNER = "owner",
 }
+
+const toBusinessServiceSortByQuery = (
+  sortBy?: SortByQuery
+): BusinessServiceSortByQuery | undefined => {
+  if (!sortBy) {
+    return undefined;
+  }
+
+  let field: BusinessServiceSortBy;
+  switch (sortBy.index) {
+    case 0:
+      field = BusinessServiceSortBy.NAME;
+      break;
+    case 2:
+      field = BusinessServiceSortBy.OWNER;
+      break;
+    default:
+      throw new Error("Invalid column index=" + sortBy.index);
+  }
+
+  return {
+    field,
+    direction: sortBy.direction,
+  };
+};
 
 const BUSINESS_SERVICE_FIELD = "businessService";
 
@@ -95,10 +121,7 @@ export const BusinessServices: React.FC = () => {
         owner: ownerFilters,
       },
       paginationQuery,
-      {
-        field: "name",
-        direction: sortByQuery?.direction,
-      }
+      toBusinessServiceSortByQuery(sortByQuery)
     );
   }, [
     nameFilters,
@@ -117,7 +140,7 @@ export const BusinessServices: React.FC = () => {
         owner: ownerFilters,
       },
       paginationQuery,
-      sortByQuery
+      toBusinessServiceSortByQuery(sortByQuery)
     );
   }, [
     nameFilters,

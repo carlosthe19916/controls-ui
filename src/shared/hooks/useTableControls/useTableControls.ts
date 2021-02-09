@@ -1,11 +1,8 @@
 import { useCallback, useReducer } from "react";
 import { ActionType, createAction, getType } from "typesafe-actions";
-import {
-  IExtraColumnData,
-  ISortBy,
-  SortByDirection,
-} from "@patternfly/react-table";
+import { IExtraColumnData, SortByDirection } from "@patternfly/react-table";
 
+import { DEFAULT_PAGINATION } from "Constants";
 import { PageQuery, SortByQuery } from "api/models";
 
 interface PaginationAction {
@@ -38,8 +35,7 @@ const defaultState: State = {
   changed: false,
 
   paginationQuery: {
-    page: 1,
-    perPage: 10,
+    ...DEFAULT_PAGINATION,
   },
   sortByQuery: undefined,
 };
@@ -94,14 +90,17 @@ interface HookState {
   ) => void;
 }
 
-export const useTableControls = ({
-  paginationQuery,
-  sortByQuery,
-}: HookArgs): HookState => {
+export const useTableControls = (args?: HookArgs): HookState => {
   const [state, dispatch] = useReducer(reducer, {
     ...defaultState,
-    ...paginationQuery,
-    ...sortByQuery,
+    paginationQuery:
+      args && args.paginationQuery
+        ? { ...args.paginationQuery }
+        : { ...defaultState.paginationQuery },
+    sortByQuery:
+      args && args.sortByQuery
+        ? { ...args.sortByQuery }
+        : defaultState.sortByQuery,
   });
 
   const handlePaginationChange = useCallback((pagination: PaginationAction) => {

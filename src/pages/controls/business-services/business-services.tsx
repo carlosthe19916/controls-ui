@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { AxiosResponse } from "axios";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -128,7 +129,7 @@ export const BusinessServices: React.FC = () => {
   ]);
 
   const columns: ICell[] = [
-    { title: t("terms.name"), transforms: [sortable] },
+    { title: t("terms.name"), transforms: [sortable, cellWidth(30)] },
     { title: t("terms.description"), transforms: [cellWidth(40)] },
     { title: t("terms.owner"), transforms: [sortable] },
     {
@@ -221,13 +222,7 @@ export const BusinessServices: React.FC = () => {
             },
             (error) => {
               dispatch(confirmDialogActions.closeDialog());
-              dispatch(
-                alertActions.addAlert(
-                  "danger",
-                  "Error",
-                  getAxiosErrorMessage(error)
-                )
-              );
+              dispatch(alertActions.addDanger(getAxiosErrorMessage(error)));
             }
           );
         },
@@ -325,9 +320,20 @@ export const BusinessServices: React.FC = () => {
     setIsNewModalOpen(true);
   };
 
-  const handleOnBusinessServiceCreated = () => {
+  const handleOnBusinessServiceCreated = (
+    response: AxiosResponse<BusinessService>
+  ) => {
     setIsNewModalOpen(false);
     refreshTable();
+
+    dispatch(
+      alertActions.addSuccess(
+        t("toastr.success.added", {
+          what: response.data.name,
+          type: "business service",
+        })
+      )
+    );
   };
 
   const handleOnCancelCreateBusinessService = () => {

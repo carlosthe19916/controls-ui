@@ -32,6 +32,11 @@
             "delete": "Are you sure you want to delete '{{what}}'? This will delete all resources associated with it and cannot be undone. Make sure this is something you really want to do!"
         }
     },
+    "toastr": {
+        "success": {
+            "added": "Success! {{what}} was added as a {{type}}."
+        }
+    },
     "validation": {
         "required": "This field is required.",
         "minLength": "This field must contain at least {{length}} characters.",

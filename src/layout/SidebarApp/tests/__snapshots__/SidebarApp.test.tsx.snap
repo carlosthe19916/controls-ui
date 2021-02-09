@@ -41,6 +41,14 @@ exports[`Test snapshot 1`] = `
           </NavLink>
         </NavItem>
       </NavList>
+      <section
+        className="rhLogoSection"
+      >
+        <img
+          alt="Red Hat"
+          src="red-hat-horizontal-reverse.svg"
+        />
+      </section>
     </Nav>
   }
   theme="dark"

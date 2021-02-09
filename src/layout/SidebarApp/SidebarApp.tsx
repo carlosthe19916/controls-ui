@@ -6,6 +6,9 @@ import { Nav, NavItem, PageSidebar, NavList } from "@patternfly/react-core";
 import { Paths } from "Paths";
 import { LayoutTheme } from "../LayoutUtils";
 
+import styles from "./SidebarApp.module.scss";
+import redHatLogo from "images/red-hat-horizontal-reverse.svg";
+
 export const SidebarApp: React.FC = () => {
   const { t } = useTranslation();
 
@@ -32,6 +35,9 @@ export const SidebarApp: React.FC = () => {
             </NavLink>
           </NavItem>
         </NavList>
+        <section className={styles.rhLogoSection}>
+          <img src={redHatLogo} alt="Red Hat" />
+        </section>
       </Nav>
     );
   };

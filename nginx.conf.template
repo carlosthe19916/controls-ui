@@ -52,7 +52,7 @@ http {
         }
 
         location /api/controls {
-            rewrite         ^/api/controls(/.*)$ $1 break;
+            rewrite         ^/api/controls/(.*)$ /controls/$1 break;
             proxy_pass      ${CONTROLS_API_URL};
         }
 

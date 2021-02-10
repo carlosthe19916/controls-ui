@@ -15,7 +15,7 @@ services:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/auth || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 20
       
   controls-db:
     image: postgres:13.1

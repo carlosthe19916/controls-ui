@@ -81,4 +81,45 @@ describe("useFetchStakeholders", () => {
     });
     expect(result.current.fetchError).toBeUndefined();
   });
+
+  it("Fetch all", async () => {
+    // Mock REST API
+    const data: StakeholderPage = {
+      _embedded: {
+        stakeholder: [],
+      },
+      total_count: 0,
+    };
+
+    new MockAdapter(axios).onGet(`${STAKEHOLDERS}?size=1000`).reply(200, data);
+
+    // Use hook
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useFetchStakeholders()
+    );
+
+    const {
+      stakeholders,
+      isFetching,
+      fetchError,
+      fetchAllStakeholders,
+    } = result.current;
+
+    expect(isFetching).toBe(false);
+    expect(stakeholders).toBeUndefined();
+    expect(fetchError).toBeUndefined();
+
+    // Init fetch
+    act(() => fetchAllStakeholders());
+    expect(result.current.isFetching).toBe(true);
+
+    // Fetch finished
+    await waitForNextUpdate();
+    expect(result.current.isFetching).toBe(false);
+    expect(result.current.stakeholders).toMatchObject({
+      data: [],
+      meta: { count: 0 },
+    });
+    expect(result.current.fetchError).toBeUndefined();
+  });
 });

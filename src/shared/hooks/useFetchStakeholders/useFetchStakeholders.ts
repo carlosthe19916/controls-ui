@@ -2,13 +2,12 @@ import { useCallback, useReducer } from "react";
 import { AxiosError } from "axios";
 import { ActionType, createAsyncAction, getType } from "typesafe-actions";
 
-import { getStakeholders, getAllStakeholders } from "api/rest";
 import {
-  PageRepresentation,
-  Stakeholder,
-  PageQuery,
-  SortByQuery,
-} from "api/models";
+  getStakeholders,
+  getAllStakeholders,
+  StakeholderSortByQuery,
+} from "api/rest";
+import { PageRepresentation, Stakeholder, PageQuery } from "api/models";
 
 export const {
   request: fetchRequest,
@@ -82,7 +81,7 @@ export interface IState {
       filterText?: string;
     },
     page: PageQuery,
-    sortBy?: SortByQuery
+    sortBy?: StakeholderSortByQuery
   ) => void;
   fetchAllStakeholders: () => void;
 }
@@ -96,7 +95,7 @@ export const useFetchStakeholders = (
     (
       filters: { filterText?: string },
       page: PageQuery,
-      sortBy?: SortByQuery
+      sortBy?: StakeholderSortByQuery
     ) => {
       dispatch(fetchRequest());
 

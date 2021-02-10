@@ -36,7 +36,8 @@ import {
   useDeleteBusinessService,
 } from "shared/hooks";
 
-import { BusinessService } from "api/models";
+import { BusinessService, SortByQuery } from "api/models";
+import { BusinessServiceSortBy, BusinessServiceSortByQuery } from "api/rest";
 import { getAxiosErrorMessage } from "utils/utils";
 
 import { NewBusinessServiceModal } from "./components/new-business-service-modal";
@@ -52,15 +53,29 @@ enum FilterKey {
   OWNER = "owner",
 }
 
-const columnIndexToField = (_: React.MouseEvent, index: number) => {
-  switch (index) {
-    case 0:
-      return "name";
-    case 2:
-      return "owner";
-    default:
-      throw new Error("Invalid column index=" + index);
+const toBusinessServiceSortByQuery = (
+  sortBy?: SortByQuery
+): BusinessServiceSortByQuery | undefined => {
+  if (!sortBy) {
+    return undefined;
   }
+
+  let field: BusinessServiceSortBy;
+  switch (sortBy.index) {
+    case 0:
+      field = BusinessServiceSortBy.NAME;
+      break;
+    case 2:
+      field = BusinessServiceSortBy.OWNER;
+      break;
+    default:
+      throw new Error("Invalid column index=" + sortBy.index);
+  }
+
+  return {
+    field,
+    direction: sortBy.direction,
+  };
 };
 
 const BUSINESS_SERVICE_FIELD = "businessService";
@@ -92,12 +107,10 @@ export const BusinessServices: React.FC = () => {
   const {
     paginationQuery,
     sortByQuery,
-    sortBy,
     handlePaginationChange,
     handleSortChange,
   } = useTableControls({
-    columnToField: columnIndexToField,
-    sortBy: { direction: "asc", index: 0 },
+    sortByQuery: { direction: "asc", index: 0 },
   });
 
   const refreshTable = useCallback(() => {
@@ -108,7 +121,7 @@ export const BusinessServices: React.FC = () => {
         owner: ownerFilters,
       },
       paginationQuery,
-      sortByQuery
+      toBusinessServiceSortByQuery(sortByQuery)
     );
   }, [
     nameFilters,
@@ -127,7 +140,7 @@ export const BusinessServices: React.FC = () => {
         owner: ownerFilters,
       },
       paginationQuery,
-      sortByQuery
+      toBusinessServiceSortByQuery(sortByQuery)
     );
   }, [
     nameFilters,
@@ -372,7 +385,7 @@ export const BusinessServices: React.FC = () => {
           items={businessServices ? businessServices.data : []}
           itemsToRow={itemsToRow}
           pagination={paginationQuery}
-          sortBy={sortBy}
+          sortBy={sortByQuery}
           handlePaginationChange={handlePaginationChange}
           handleSortChange={handleSortChange}
           columns={columns}

@@ -2,13 +2,8 @@ import { useCallback, useReducer } from "react";
 import { AxiosError } from "axios";
 import { ActionType, createAsyncAction, getType } from "typesafe-actions";
 
-import { getBusinessServices } from "api/rest";
-import {
-  PageRepresentation,
-  BusinessService,
-  PageQuery,
-  SortByQuery,
-} from "api/models";
+import { getBusinessServices, BusinessServiceSortByQuery } from "api/rest";
+import { PageRepresentation, BusinessService, PageQuery } from "api/models";
 
 export const {
   request: fetchRequest,
@@ -84,7 +79,7 @@ export interface IState {
       owner?: string[];
     },
     page: PageQuery,
-    sortBy?: SortByQuery
+    sortBy?: BusinessServiceSortByQuery
   ) => void;
 }
 
@@ -97,7 +92,7 @@ export const useFetchBusinessServices = (
     (
       filters: { name?: string[]; description?: string[]; owner?: string[] },
       page: PageQuery,
-      sortBy?: SortByQuery
+      sortBy?: BusinessServiceSortByQuery
     ) => {
       dispatch(fetchRequest());
 

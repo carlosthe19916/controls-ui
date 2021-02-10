@@ -21,6 +21,7 @@ exports[`SelectStakeholder Renders without crashing 1`] = `
   isGrouped={false}
   isOpen={false}
   isPlain={false}
+  maxHeight={350}
   menuAppendTo={[Function]}
   noResultsFoundText="No results found"
   onClear={[Function]}

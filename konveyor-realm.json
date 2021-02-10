@@ -992,7 +992,7 @@
       },
       {
         "id": "695da74e-39ca-4e46-a2b6-6a673f92d4e2",
-        "clientId": "tackle-ui",
+        "clientId": "controls-ui",
         "surrogateAuthRequired": false,
         "enabled": true,
         "alwaysDisplayInConsole": false,
@@ -2316,4 +2316,3 @@
     "keycloakVersion": "11.0.2",
     "userManagedAccessAllowed": false
   }
-  

@@ -34,9 +34,42 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         browser: [chrome, firefox]
+    services:
+      keycloak:
+        image: quay.io/keycloak/keycloak:12.0.2
+        ports:
+          - 8180:8080
+        env:
+          KEYCLOAK_USER: admin
+          KEYCLOAK_PASSWORD: admin
+        options: >-
+          --health-cmd "curl --fail http://localhost:8080/auth || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      backend-db:
+        image: postgres:13.1
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: searchpe_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Keycloak Admin CLI
+        uses: carlosthe19916/keycloak-action@0.4
+        with:
+          server: http://keycloak:8080/auth
+          username: admin
+          password: admin
+          kcadm: create realms -f konveyor-realm.json
       - name: Dependencies
         run: docker-compose --verbose up
       - name: wait-on
@@ -81,7 +114,7 @@ jobs:
   #       with:
   #         node-version: 12.x
   #     - run: yarn install
-  #     - run: yarn build      
+  #     - run: yarn build
   #     - name: Push to Quay.io
   #       uses: elgohr/Publish-Docker-Github-Action@master
   #       with:

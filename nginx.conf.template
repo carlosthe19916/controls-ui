@@ -51,6 +51,10 @@ http {
             try_files $uri $uri/ /index.html;
         }
 
+        location /auth {
+            proxy_pass      ${SSO_SERVER_URL};
+        }
+
         location /api/controls {
             rewrite         ^/api/controls/(.*)$ /controls/$1 break;
             proxy_pass      ${CONTROLS_API_URL};

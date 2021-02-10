@@ -22,14 +22,14 @@ fi
 
 if [ -f ./nginx.conf.template ]; then
   echo "---> Processing nginx.conf.template configuration file..."
-  envsubst '${CONTROLS_API_URL}' < ./nginx.conf.template > ./nginx.conf
+  envsubst '${CONTROLS_API_URL} ${SSO_SERVER_URL}' < ./nginx.conf.template > ./nginx.conf
   cp -v ./nginx.conf "${NGINX_CONF_PATH}"
   rm -f ./nginx.conf
 fi
 
 if [ -f ./keycloak.json.template ]; then
   echo "---> Processing keycloak.json.template configuration file..."  
-  envsubst '${SSO_REALM} ${SSO_SERVER_URL} ${SSO_CLIENT_ID}' < ./keycloak.json.template > ./keycloak.json
+  envsubst '${SSO_REALM} ${SSO_CLIENT_ID}' < ./keycloak.json.template > ./keycloak.json
 fi
 
 echo "Container started"

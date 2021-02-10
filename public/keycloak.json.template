@@ -1,6 +1,6 @@
 {
     "realm": "${SSO_REALM}",    
-    "auth-server-url": "${SSO_SERVER_URL}",
+    "auth-server-url": "/auth",
     "resource": "${SSO_CLIENT_ID}",
     "public-client": true
 }

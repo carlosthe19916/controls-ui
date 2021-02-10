@@ -1,6 +1,6 @@
 {
   "realm": "konveyor",
   "auth-server-url": "http://localhost:8180/auth/",
-  "resource": "pathfinder-ui",
+  "resource": "tackle-ui",
   "public-client": true
 }

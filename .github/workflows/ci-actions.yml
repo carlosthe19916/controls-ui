@@ -54,7 +54,7 @@ jobs:
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: searchpe_db
+          POSTGRES_DB: controls_db
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -72,13 +72,14 @@ jobs:
           kcadm: create realms -f konveyor-realm.json
       - name: Controls
         run: |
-          docker run -d -p 8080:8080 quay.io/mrizzi/poc-controls:add-metadata-to-hal-native \
+          docker run -d -p 8080:8080 \
           -e QUARKUS_DATASOURCE_USERNAME=user \
           -e QUARKUS_DATASOURCE_PASSWORD=password \
           -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://localhost:5432/controls_db \
           -e QUARKUS_OIDC_AUTH_SERVER_URL=http://localhost:8180/auth/realms/konveyor \
           -e QUARKUS_OIDC_CLIENT_ID=controls-api \
-          -e QUARKUS_OIDC_CREDENTIALS_SECRET0secret
+          -e QUARKUS_OIDC_CREDENTIALS_SECRET=secret \
+          quay.io/mrizzi/poc-controls:add-metadata-to-hal-native
       - run: yarn install
       - run: yarn build:instrumentation
       - name: Cypress run

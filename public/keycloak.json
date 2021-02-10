@@ -1,6 +1,6 @@
 {
-  "realm": "quarkus",
+  "realm": "konveyor",
   "auth-server-url": "http://localhost:8180/auth/",
-  "resource": "controls-ui",
+  "resource": "pathfinder-ui",
   "public-client": true
 }

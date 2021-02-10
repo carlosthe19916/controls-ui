@@ -38,7 +38,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Dependencies
-        run: docker-compose up
+        run: docker-compose --verbose up
       - name: wait-on
         run: docker ps -a && sleep 50s
       - name: wait-on

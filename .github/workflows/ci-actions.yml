@@ -70,7 +70,7 @@ jobs:
           username: admin
           password: admin
           kcadm: create realms -f konveyor-realm.json
-      - name: Controls
+      - name: Controls API
         run: |
           docker run -d -p 8080:8080 \
           -e QUARKUS_DATASOURCE_USERNAME=user \
@@ -80,6 +80,8 @@ jobs:
           -e QUARKUS_OIDC_CLIENT_ID=controls-api \
           -e QUARKUS_OIDC_CREDENTIALS_SECRET=secret \
           quay.io/mrizzi/poc-controls:add-metadata-to-hal-native
+      - name: Controls
+        run: sleep 15s && docker ps
       - run: yarn install
       - run: yarn build:instrumentation
       - name: Cypress run

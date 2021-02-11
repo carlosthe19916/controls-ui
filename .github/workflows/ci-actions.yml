@@ -71,11 +71,10 @@ jobs:
           password: admin
           kcadm: create realms -f konveyor-realm.json
       - name: Controls API
-        run: docker run -d --name controls --network ${{ job.services.backend-db.network }} --network-alias controls -p 8888:8888 -e QUARKUS_HTTP_PORT=8888 -e QUARKUS_DATASOURCE_USERNAME=user -e QUARKUS_DATASOURCE_PASSWORD=password -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://backend-db:5432/controls_db -e QUARKUS_OIDC_AUTH_SERVER_URL=http://keycloak:8080/auth/realms/konveyor -e QUARKUS_OIDC_CLIENT_ID=controls-api -e QUARKUS_OIDC_CREDENTIALS_SECRET=secret quay.io/mrizzi/poc-controls:latest-native
-      - name: Controls
-        run: sleep 15s && docker ps
-      - name: Controls
-        run: docker logs controls
+        run: |
+          docker run -d --name controls --network ${{ job.services.backend-db.network }} --network-alias controls -p 8080:8080 -e QUARKUS_HTTP_PORT=8080 -e QUARKUS_DATASOURCE_USERNAME=user -e QUARKUS_DATASOURCE_PASSWORD=password -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://backend-db:5432/controls_db -e QUARKUS_OIDC_AUTH_SERVER_URL=http://keycloak:8080/auth/realms/konveyor -e QUARKUS_OIDC_CLIENT_ID=controls-api -e QUARKUS_OIDC_CREDENTIALS_SECRET=secret quay.io/mrizzi/poc-controls:latest-native
+          sleep 15s && docker ps
+          docker logs controls
       - run: yarn install
       - run: yarn build:instrumentation
       - name: Cypress run

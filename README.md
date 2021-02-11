@@ -17,17 +17,56 @@ This project depends on other resources:
 - Keycloak (the authentication and authorization system)
 - Controls (the backend API)
 
+### Create a docker network
+
+```shell
+docker network create konveyor
+```
+
 ### Start keycloak
 
 Use docker for starting keycloak:
 
 ```shell
-docker run -p 8180:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak
+docker run -d \
+--network konveyor --network-alias keycloak \
+-p 8180:8080 \
+-e KEYCLOAK_USER=admin \
+-e KEYCLOAK_PASSWORD=admin \
+-e KEYCLOAK_IMPORT=/tmp/konveyor-realm.json \
+-v $(pwd)/konveyor-realm.json:/tmp/konveyor-realm.json \
+quay.io/keycloak/keycloak:12.0.2
 ```
 
-- Open http://localhost:8180/auth
-- Login using username=admin and password=admin
-- Create a new realm importing the file `konveyor-realm.json` located in the root folder
+### Start controls
+
+Start the controls database:
+
+```shell
+docker run -d \
+--network konveyor --network-alias controls-db \
+-p 5432:5432 \
+-e POSTGRES_USER=user \
+-e POSTGRES_PASSWORD=password \
+-e POSTGRES_DB=controls_db \
+postgres:13.1
+```
+
+Start the controls:
+
+```shell
+docker run -d \
+--network konveyor --network-alias controls \
+-p 8080:8080 \
+-e QUARKUS_HTTP_PORT=8080 \
+-e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://controls-db:5432/controls_db \
+-e QUARKUS_DATASOURCE_USERNAME=user \
+-e QUARKUS_DATASOURCE_PASSWORD=password \
+-e QUARKUS_OIDC_AUTH_SERVER_URL=http://keycloak:8080/auth/realms/konveyor \
+-e QUARKUS_OIDC_CLIENT_ID=controls-api \
+-e QUARKUS_OIDC_CREDENTIALS_SECRET=secret \
+quay.io/mrizzi/poc-controls:latest-native
+```
 
 ## Start the UI
 

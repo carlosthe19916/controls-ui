@@ -61,13 +61,9 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
         onChange={handleOnChangeFilterText}
         onKeyPress={handleOnSearchKeyPress}
         placeholder="Filter..."
-        aria-label="Filter by..."
+        aria-label="filter-text"
       />
-      <Button
-        variant="control"
-        aria-label="search button"
-        onClick={handleOnSearch}
-      >
+      <Button variant="control" aria-label="search" onClick={handleOnSearch}>
         <SearchIcon />
       </Button>
     </InputGroup>

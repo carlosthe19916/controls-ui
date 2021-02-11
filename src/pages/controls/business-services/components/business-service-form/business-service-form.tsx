@@ -190,6 +190,7 @@ export const BusinessServiceForm: React.FC<BusinessServiceFormProps> = ({
         <ActionGroup>
           <Button
             type="submit"
+            aria-label="submit"
             variant={ButtonVariant.primary}
             isDisabled={
               !formik.isValid ||
@@ -201,6 +202,8 @@ export const BusinessServiceForm: React.FC<BusinessServiceFormProps> = ({
             {!businessService ? t("actions.create") : t("actions.save")}
           </Button>
           <Button
+            type="button"
+            aria-label="cancel"
             variant={ButtonVariant.link}
             isDisabled={formik.isSubmitting || formik.isValidating}
             onClick={onCancel}

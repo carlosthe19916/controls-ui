@@ -57,7 +57,7 @@ describe("ConfirmDialog", () => {
       />
     );
 
-    wrapper.find("button[aria-label='Confirm']").simulate("click");
+    wrapper.find("button[aria-label='confirm']").simulate("click");
     expect(onConfirmSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -77,7 +77,7 @@ describe("ConfirmDialog", () => {
       />
     );
 
-    wrapper.find("button[aria-label='Cancel']").simulate("click");
+    wrapper.find("button[aria-label='cancel']").simulate("click");
     expect(onCancelSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -97,14 +97,14 @@ describe("ConfirmDialog", () => {
       />
     );
 
-    expect(wrapper.find("button[aria-label='Confirm']")).toHaveClassName(
+    expect(wrapper.find("button[aria-label='confirm']")).toHaveClassName(
       "pf-m-disabled"
     );
-    expect(wrapper.find("button[aria-label='Cancel']")).toHaveClassName(
+    expect(wrapper.find("button[aria-label='cancel']")).toHaveClassName(
       "pf-m-disabled"
     );
 
-    expect(wrapper.find("button[aria-label='Close']")).not.toHaveClassName(
+    expect(wrapper.find("button[aria-label='close']")).not.toHaveClassName(
       "pf-m-disabled"
     );
   });

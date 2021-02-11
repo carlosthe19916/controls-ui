@@ -5,14 +5,14 @@ exports[`ConfirmDialog Renders without crashing 1`] = `
   actions={
     Array [
       <Button
-        aria-label="Confirm"
+        aria-label="confirm"
         onClick={[Function]}
         variant="danger"
       >
         Yes
       </Button>,
       <Button
-        aria-label="Cancel"
+        aria-label="cancel"
         onClick={[Function]}
         variant="link"
       >

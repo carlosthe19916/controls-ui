@@ -182,12 +182,20 @@ export const BusinessServices: React.FC = () => {
           title: (
             <Flex>
               <FlexItem align={{ default: "alignRight" }}>
-                <Button variant="secondary" onClick={() => editRow(item)}>
+                <Button
+                  aria-label="edit"
+                  variant="secondary"
+                  onClick={() => editRow(item)}
+                >
                   {t("actions.edit")}
                 </Button>
               </FlexItem>
               <FlexItem>
-                <Button variant="link" onClick={() => deleteRow(item)}>
+                <Button
+                  aria-label="delete"
+                  variant="link"
+                  onClick={() => deleteRow(item)}
+                >
                   {t("actions.delete")}
                 </Button>
               </FlexItem>
@@ -442,7 +450,7 @@ export const BusinessServices: React.FC = () => {
               <ToolbarItem>
                 <Button
                   type="button"
-                  aria-label="new-company"
+                  aria-label="create-business-service"
                   variant={ButtonVariant.primary}
                   onClick={handleOnOpenCreateNewBusinessServiceModal}
                 >

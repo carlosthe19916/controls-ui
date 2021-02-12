@@ -5,7 +5,7 @@ import {
   TextList,
   TextListItem,
 } from "@patternfly/react-core";
-import brandImage from "images/logo-navbar.svg";
+import brandImage from "images/tackle.png";
 
 export interface AppAboutModalProps {
   isOpen: boolean;

@@ -15,7 +15,7 @@ import { AppAboutModalState } from "../AppAboutModalState";
 import { SSOMenu } from "./SSOMenu";
 import { MobileDropdown } from "./MobileDropdown";
 
-import navBrandImage from "images/logo-navbar.svg";
+import navBrandImage from "images/tackle.png";
 import imgAvatar from "images/avatar.svg";
 
 export const HeaderApp: React.FC = () => {

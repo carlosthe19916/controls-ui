@@ -209,8 +209,9 @@ jobs:
           # start: yarn run ui:start
           wait-on: "http://localhost:3000"
           wait-on-timeout: 120
-          config: pageLoadTimeout=100000;auth_base_url=http://localhost:3000/auth
+          config: pageLoadTimeout=100000
           browser: ${{ matrix.browser }}
+          env: auth_base_url=http://localhost:3000/auth
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v1

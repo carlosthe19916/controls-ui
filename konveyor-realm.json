@@ -992,7 +992,7 @@
       },
       {
         "id": "695da74e-39ca-4e46-a2b6-6a673f92d4e2",
-        "clientId": "controls-ui",
+        "clientId": "tackle-ui",
         "surrogateAuthRequired": false,
         "enabled": true,
         "alwaysDisplayInConsole": false,

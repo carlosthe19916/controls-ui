@@ -44,6 +44,7 @@ docker run -d \
 -e KEYCLOAK_USER=admin \
 -e KEYCLOAK_PASSWORD=admin \
 -e KEYCLOAK_IMPORT=/tmp/konveyor-realm.json \
+-e DB_VENDOR=h2 \
 -v $(pwd)/konveyor-realm.json:/tmp/konveyor-realm.json \
 quay.io/keycloak/keycloak:12.0.2
 ```

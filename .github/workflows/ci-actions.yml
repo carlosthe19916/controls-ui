@@ -206,7 +206,6 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           record: false
-          # start: yarn run ui:start
           wait-on: "http://localhost:3000"
           wait-on-timeout: 120
           config: pageLoadTimeout=100000

@@ -137,6 +137,11 @@ jobs:
           dockerfile: Dockerfile
           snapshot: false
           tags: "${{ github.event.pull_request.head.ref }}"
+      - name: Comment
+        uses: thollander/actions-comment-pull-request@master
+        with:
+          message: 'Example of message !'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # container-images:
   #   if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'carlosthe19916' }}

@@ -39,7 +39,7 @@ jobs:
   #       browser: [chrome, firefox]
   #   services:
   #     keycloak:
-  #       image: quay.io/keycloak/keycloak:12.0.1
+  #       image: quay.io/keycloak/keycloak:12.0.2
   #       ports:
   #         - 8180:8080
   #       env:
@@ -148,7 +148,7 @@ jobs:
         browser: [chrome, firefox]
     services:
       keycloak:
-        image: quay.io/keycloak/keycloak:12.0.1
+        image: quay.io/keycloak/keycloak:12.0.2
         ports:
           - 8180:8080
         env:
@@ -202,6 +202,7 @@ jobs:
           -e CONTROLS_API_URL=http://controls:8080/controls \
           quay.io/carlosthe19916/controls-ui:nginx
           sleep 5s && docker logs tackle-ui
+      - run: http://localhost:8080/controls/q/health
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

@@ -202,7 +202,7 @@ jobs:
           -e CONTROLS_API_URL=http://controls:8080/controls \
           quay.io/carlosthe19916/controls-ui:nginx
           sleep 5s && docker logs tackle-ui
-      - run: http://localhost:8080/controls/q/health
+      - run: curl http://localhost:8080/controls/q/health
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

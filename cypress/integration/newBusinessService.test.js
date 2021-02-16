@@ -8,6 +8,7 @@ context("Test NewBusinessService", () => {
     cy.get("@tokens").then((tokens) => {
       const headers = {
         "Content-Type": "application/json",
+        "Accept": "application/hal+json",
         Authorization: "Bearer " + tokens.access_token,
       };
 

@@ -199,7 +199,7 @@ jobs:
           -e SSO_CLIENT_ID=tackle-ui \
           -e SSO_SERVER_URL=http://keycloak:8080/auth \
           -e CONTROLS_API_URL=http://controls:8080/controls \
-          quay.io/carlosthe19916/controls-ui:nginx
+          quay.io/carlosthe19916/controls-ui:master
           sleep 5s && docker logs tackle-ui
       - name: Cypress run
         uses: cypress-io/github-action@v2

@@ -135,8 +135,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           dockerfile: Dockerfile
-          snapshot: false
-          tags: "master"
+          tag_names: true
 
   # container-images:
   #   if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'carlosthe19916' }}

@@ -114,7 +114,7 @@ jobs:
   #         flags: e2etests
 
   container-images-for-testing:
-    if: ${{ github.event_name == 'pull_request' && github.repository_owner != 'carlosthe19916' }}
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     # needs: [unit-test, e2e]
     steps:

@@ -128,7 +128,7 @@ jobs:
           yarn install
           yarn build
       - name: Push to Quay.io
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           registry: quay.io
           name: carlosthe19916/controls-ui

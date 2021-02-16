@@ -127,7 +127,6 @@ jobs:
         run: |
           yarn install
           yarn build
-      - uses: nelonoel/branch-name@v1.0.1
       - name: Push to GitHub Packages
         uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
@@ -137,7 +136,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           dockerfile: Dockerfile
           snapshot: false
-          tags: "${BRANCH_NAME}"
+          tags: " ${{ github.event.pull_request.head.ref }}"
 
   # container-images:
   #   if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'carlosthe19916' }}

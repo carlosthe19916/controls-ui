@@ -29,6 +29,7 @@ import {
   AppPlaceholder,
   ConditionalRender,
   AppTableWithControls,
+  SearchFilter,
 } from "shared/components";
 import {
   useTableControls,
@@ -42,10 +43,6 @@ import { getAxiosErrorMessage } from "utils/utils";
 
 import { NewBusinessServiceModal } from "./components/new-business-service-modal";
 import { UpdateBusinessServiceModal } from "./components/update-business-service-modal";
-import {
-  FilterOption,
-  SearchFilter,
-} from "./components/search-filter/search-filter";
 
 enum FilterKey {
   NAME = "name",
@@ -53,7 +50,7 @@ enum FilterKey {
   OWNER = "owner",
 }
 
-const toBusinessServiceSortByQuery = (
+const toSortByQuery = (
   sortBy?: SortByQuery
 ): BusinessServiceSortByQuery | undefined => {
   if (!sortBy) {
@@ -78,7 +75,7 @@ const toBusinessServiceSortByQuery = (
   };
 };
 
-const BUSINESS_SERVICE_FIELD = "businessService";
+const ENTITY_FIELD = "entity";
 
 // const getRow = (rowData: IRowData): BusinessService => {
 //   return rowData[BUSINESS_SERVICE_FIELD];
@@ -121,7 +118,7 @@ export const BusinessServices: React.FC = () => {
         owner: ownerFilters,
       },
       paginationQuery,
-      toBusinessServiceSortByQuery(sortByQuery)
+      toSortByQuery(sortByQuery)
     );
   }, [
     nameFilters,
@@ -140,7 +137,7 @@ export const BusinessServices: React.FC = () => {
         owner: ownerFilters,
       },
       paginationQuery,
-      toBusinessServiceSortByQuery(sortByQuery)
+      toSortByQuery(sortByQuery)
     );
   }, [
     nameFilters,
@@ -165,7 +162,7 @@ export const BusinessServices: React.FC = () => {
 
   const itemsToRow = (items: BusinessService[]) => {
     return items.map((item) => ({
-      [BUSINESS_SERVICE_FIELD]: item,
+      [ENTITY_FIELD]: item,
       cells: [
         {
           title: item.name,
@@ -263,7 +260,7 @@ export const BusinessServices: React.FC = () => {
 
   // Advanced filters
 
-  const filterOptions: FilterOption[] = [
+  const filterOptions = [
     {
       key: FilterKey.NAME,
       name: t("terms.name"),

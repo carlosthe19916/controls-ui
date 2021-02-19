@@ -25,8 +25,11 @@ export interface BusinessService {
 }
 
 export interface Stakeholder {
+  id?: number;
   displayName: string;
   email: string;
+  jobFunction?: string;
+  groups?: number;
 }
 
 export interface BusinessServicePage {

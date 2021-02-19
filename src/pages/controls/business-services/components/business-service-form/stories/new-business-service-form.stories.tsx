@@ -7,7 +7,7 @@ import {
 import { Modal } from "@patternfly/react-core";
 
 export default {
-  title: "Components / NewBusinessServiceForm",
+  title: "BusinessServices / BusinessServiceForm",
   component: BusinessServiceForm,
   argTypes: {
     onCancel: { action: "onCancel" },

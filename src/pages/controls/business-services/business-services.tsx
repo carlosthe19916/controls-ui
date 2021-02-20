@@ -13,7 +13,13 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { cellWidth, ICell, sortable, TableText } from "@patternfly/react-table";
+import {
+  cellWidth,
+  ICell,
+  IRow,
+  sortable,
+  TableText,
+} from "@patternfly/react-table";
 import { AddCircleOIcon } from "@patternfly/react-icons";
 
 import { useDispatch } from "react-redux";
@@ -75,7 +81,7 @@ const toSortByQuery = (
 const ENTITY_FIELD = "entity";
 
 // const getRow = (rowData: IRowData): BusinessService => {
-//   return rowData[BUSINESS_SERVICE_FIELD];
+//   return rowData[ENTITY_FIELD];
 // };
 
 export const BusinessServices: React.FC = () => {
@@ -157,8 +163,9 @@ export const BusinessServices: React.FC = () => {
     },
   ];
 
-  const itemsToRow = (items: BusinessService[]) => {
-    return items.map((item) => ({
+  const rows: IRow[] = [];
+  businessServices?.data.forEach((item) => {
+    rows.push({
       [ENTITY_FIELD]: item,
       cells: [
         {
@@ -181,8 +188,10 @@ export const BusinessServices: React.FC = () => {
           ),
         },
       ],
-    }));
-  };
+    });
+  });
+
+  // Rows
 
   // const actions: IActions = [
   //   {
@@ -311,13 +320,12 @@ export const BusinessServices: React.FC = () => {
       >
         <AppTableWithControls
           count={businessServices ? businessServices.meta.count : 0}
-          items={businessServices ? businessServices.data : []}
-          itemsToRow={itemsToRow}
           pagination={paginationQuery}
           sortBy={sortByQuery}
           handlePaginationChange={handlePaginationChange}
           handleSortChange={handleSortChange}
           columns={columns}
+          rows={rows}
           // actions={actions}
           isLoading={isFetching}
           loadingVariant="skeleton"

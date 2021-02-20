@@ -1,22 +1,31 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
 import { useTranslation } from "react-i18next";
+import { useSelectionState } from "@konveyor/lib-ui";
 
 import {
   Button,
   ButtonVariant,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
   Title,
-  ToolbarChip,
-  ToolbarChipGroup,
-  ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { ICell, sortable } from "@patternfly/react-table";
+import {
+  expandable,
+  ICell,
+  IExtraData,
+  IRow,
+  IRowData,
+  sortable,
+} from "@patternfly/react-table";
 import { AddCircleOIcon } from "@patternfly/react-icons";
 
 import { useDispatch } from "react-redux";
@@ -60,16 +69,16 @@ const toSortByQuery = (
 
   let field: StakeholderSortBy;
   switch (sortBy.index) {
-    case 0:
+    case 1:
       field = StakeholderSortBy.EMAIL;
       break;
-    case 1:
+    case 2:
       field = StakeholderSortBy.DISPLAY_NAME;
       break;
-    case 2:
+    case 3:
       field = StakeholderSortBy.JOB_FUNCTION;
       break;
-    case 3:
+    case 4:
       field = StakeholderSortBy.GROUP;
       break;
     default:
@@ -83,6 +92,10 @@ const toSortByQuery = (
 };
 
 const ENTITY_FIELD = "entity";
+
+const getRow = (rowData: IRowData): Stakeholder => {
+  return rowData[ENTITY_FIELD];
+};
 
 export const Stakeholders: React.FC = () => {
   const { t } = useTranslation();
@@ -106,7 +119,6 @@ export const Stakeholders: React.FC = () => {
       name: t("terms.group"),
     },
   ];
-
   const [filtersValue, setFiltersValue] = useState<Map<FilterKey, string[]>>(
     new Map([])
   );
@@ -129,7 +141,15 @@ export const Stakeholders: React.FC = () => {
     handlePaginationChange,
     handleSortChange,
   } = useTableControls({
-    sortByQuery: { direction: "asc", index: 0 },
+    sortByQuery: { direction: "asc", index: 1 },
+  });
+
+  const {
+    isItemSelected: isItemExpanded,
+    toggleItemSelected: toggleItemExpanded,
+  } = useSelectionState<Stakeholder>({
+    items: stakeholders?.data || [],
+    isEqual: (a, b) => a.id === b.id,
   });
 
   const refreshTable = useCallback(() => {
@@ -159,7 +179,11 @@ export const Stakeholders: React.FC = () => {
   }, [filtersValue, paginationQuery, sortByQuery, fetchStakeholders]);
 
   const columns: ICell[] = [
-    { title: t("terms.email"), transforms: [sortable] },
+    {
+      title: t("terms.email"),
+      transforms: [sortable],
+      cellFormatters: [expandable],
+    },
     { title: t("terms.displayName"), transforms: [sortable] },
     { title: t("terms.jobFunction"), transforms: [sortable] },
     { title: t("terms.group(s)"), transforms: [sortable] },
@@ -171,9 +195,12 @@ export const Stakeholders: React.FC = () => {
     },
   ];
 
-  const itemsToRow = (items: Stakeholder[]) => {
-    return items.map((item) => ({
+  const rows: IRow[] = [];
+  stakeholders?.data.forEach((item) => {
+    const isExpanded = isItemExpanded(item);
+    rows.push({
       [ENTITY_FIELD]: item,
+      isOpen: isExpanded,
       cells: [
         {
           title: item.email,
@@ -196,7 +223,39 @@ export const Stakeholders: React.FC = () => {
           ),
         },
       ],
-    }));
+    });
+
+    if (isExpanded) {
+      rows.push({
+        parent: rows.length - 1,
+        fullWidth: false,
+        cells: [
+          <div className="pf-c-table__expandable-row-content">
+            <DescriptionList>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t("terms.group(s)")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {item.groups}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </DescriptionList>
+          </div>,
+        ],
+      });
+    }
+  });
+
+  // Rows
+
+  const collapseRow = (
+    event: React.MouseEvent,
+    rowIndex: number,
+    isOpen: boolean,
+    rowData: IRowData,
+    extraData: IExtraData
+  ) => {
+    const row = getRow(rowData);
+    toggleItemExpanded(row);
   };
 
   const editRow = (row: Stakeholder) => {
@@ -299,13 +358,13 @@ export const Stakeholders: React.FC = () => {
       >
         <AppTableWithControls
           count={stakeholders ? stakeholders.meta.count : 0}
-          items={stakeholders ? stakeholders.data : []}
-          itemsToRow={itemsToRow}
           pagination={paginationQuery}
           sortBy={sortByQuery}
           handlePaginationChange={handlePaginationChange}
           handleSortChange={handleSortChange}
+          onCollapse={collapseRow}
           columns={columns}
+          rows={rows}
           // actions={actions}
           isLoading={isFetching}
           loadingVariant="skeleton"
@@ -313,7 +372,7 @@ export const Stakeholders: React.FC = () => {
           clearAllFilters={handleOnClearAllFilters}
           filtersApplied={
             Array.from(filtersValue.values()).reduce(
-              (current, accumulator) => [...accumulator, ...current],
+              (previous, current) => [...previous, ...current],
               []
             ).length > 0
           }

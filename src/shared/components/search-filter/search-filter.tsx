@@ -6,7 +6,7 @@ import { SearchIcon } from "@patternfly/react-icons";
 import { SimpleFilterDropdown } from "shared/components";
 import { DropdownOption } from "shared/components/simple-filter-dropdown/simple-filter-dropdown";
 
-export interface FilterOption {
+interface FilterOption {
   key: string;
   name: React.ReactNode;
 }

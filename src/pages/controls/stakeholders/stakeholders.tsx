@@ -9,8 +9,6 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
-  Flex,
-  FlexItem,
   Title,
   ToolbarChip,
   ToolbarChipGroup,
@@ -27,9 +25,11 @@ import { confirmDialogActions } from "store/confirmDialog";
 
 import {
   AppPlaceholder,
-  ConditionalRender,
+  AppTableActionButtons,
   AppTableWithControls,
+  ConditionalRender,
   SearchFilter,
+  AppTableToolbarToggleGroup,
 } from "shared/components";
 import {
   useTableControls,
@@ -37,9 +37,9 @@ import {
   useDeleteStakeholder,
 } from "shared/hooks";
 
-import { Stakeholder, SortByQuery } from "api/models";
-import { StakeholderSortBy, StakeholderSortByQuery } from "api/rest";
 import { getAxiosErrorMessage } from "utils/utils";
+import { StakeholderSortBy, StakeholderSortByQuery } from "api/rest";
+import { Stakeholder, SortByQuery } from "api/models";
 
 import { NewStakeholderModal } from "./components/new-stakeholder-modal";
 import { UpdateStakeholderModal } from "./components/update-stakeholder-modal";
@@ -88,10 +88,28 @@ export const Stakeholders: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const [emailFilters, setEmailFilters] = useState<string[]>([]);
-  const [displayNameFilters, setDisplayNameFilters] = useState<string[]>([]);
-  const [jobFunctionFilters, setJobFunctionFilters] = useState<string[]>([]);
-  const [groupFilters, setGroupFilters] = useState<string[]>([]);
+  const filters = [
+    {
+      key: FilterKey.EMAIL,
+      name: t("terms.email"),
+    },
+    {
+      key: FilterKey.DISPLAY_NAME,
+      name: t("terms.displayName"),
+    },
+    {
+      key: FilterKey.JOB_FUNCTION,
+      name: t("terms.jobFunction"),
+    },
+    {
+      key: FilterKey.GROUPS,
+      name: t("terms.group"),
+    },
+  ];
+
+  const [filtersValue, setFiltersValue] = useState<Map<FilterKey, string[]>>(
+    new Map([])
+  );
 
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [rowToUpdate, setRowToUpdate] = useState<Stakeholder>();
@@ -117,44 +135,28 @@ export const Stakeholders: React.FC = () => {
   const refreshTable = useCallback(() => {
     fetchStakeholders(
       {
-        email: emailFilters,
-        displayName: displayNameFilters,
-        jobFuction: jobFunctionFilters,
-        group: groupFilters,
+        email: filtersValue.get(FilterKey.EMAIL),
+        displayName: filtersValue.get(FilterKey.DISPLAY_NAME),
+        jobFuction: filtersValue.get(FilterKey.JOB_FUNCTION),
+        group: filtersValue.get(FilterKey.GROUPS),
       },
       paginationQuery,
       toSortByQuery(sortByQuery)
     );
-  }, [
-    emailFilters,
-    displayNameFilters,
-    jobFunctionFilters,
-    groupFilters,
-    paginationQuery,
-    sortByQuery,
-    fetchStakeholders,
-  ]);
+  }, [filtersValue, paginationQuery, sortByQuery, fetchStakeholders]);
 
   useEffect(() => {
     fetchStakeholders(
       {
-        email: emailFilters,
-        displayName: displayNameFilters,
-        jobFuction: jobFunctionFilters,
-        group: groupFilters,
+        email: filtersValue.get(FilterKey.EMAIL),
+        displayName: filtersValue.get(FilterKey.DISPLAY_NAME),
+        jobFuction: filtersValue.get(FilterKey.JOB_FUNCTION),
+        group: filtersValue.get(FilterKey.GROUPS),
       },
       paginationQuery,
       toSortByQuery(sortByQuery)
     );
-  }, [
-    emailFilters,
-    displayNameFilters,
-    jobFunctionFilters,
-    groupFilters,
-    paginationQuery,
-    sortByQuery,
-    fetchStakeholders,
-  ]);
+  }, [filtersValue, paginationQuery, sortByQuery, fetchStakeholders]);
 
   const columns: ICell[] = [
     { title: t("terms.email"), transforms: [sortable] },
@@ -187,26 +189,10 @@ export const Stakeholders: React.FC = () => {
         },
         {
           title: (
-            <Flex>
-              <FlexItem align={{ default: "alignRight" }}>
-                <Button
-                  aria-label="edit"
-                  variant="secondary"
-                  onClick={() => editRow(item)}
-                >
-                  {t("actions.edit")}
-                </Button>
-              </FlexItem>
-              <FlexItem>
-                <Button
-                  aria-label="delete"
-                  variant="link"
-                  onClick={() => deleteRow(item)}
-                >
-                  {t("actions.delete")}
-                </Button>
-              </FlexItem>
-            </Flex>
+            <AppTableActionButtons
+              onEdit={() => editRow(item)}
+              onDelete={() => deleteRow(item)}
+            />
           ),
         },
       ],
@@ -245,97 +231,29 @@ export const Stakeholders: React.FC = () => {
 
   // Advanced filters
 
-  const filterOptions = [
-    {
-      key: FilterKey.EMAIL,
-      name: t("terms.email"),
-    },
-    {
-      key: FilterKey.DISPLAY_NAME,
-      name: t("terms.displayName"),
-    },
-    {
-      key: FilterKey.JOB_FUNCTION,
-      name: t("terms.jobFunction"),
-    },
-    {
-      key: FilterKey.GROUPS,
-      name: t("terms.group"),
-    },
-  ];
-
   const handleOnClearAllFilters = () => {
-    setEmailFilters([]);
-    setDisplayNameFilters([]);
-    setJobFunctionFilters([]);
-    setGroupFilters([]);
+    setFiltersValue((current) => {
+      const newVal = new Map(current);
+      Array.from(newVal.keys()).forEach((key) => {
+        newVal.set(key, []);
+      });
+      return newVal;
+    });
   };
 
-  const handleOnFilterApplied = (key: string, filterText: string) => {
-    if (key === FilterKey.EMAIL) {
-      setEmailFilters([...emailFilters, filterText]);
-    } else if (key === FilterKey.DISPLAY_NAME) {
-      setDisplayNameFilters([...displayNameFilters, filterText]);
-    } else if (key === FilterKey.JOB_FUNCTION) {
-      setJobFunctionFilters([...jobFunctionFilters, filterText]);
-    } else if (key === FilterKey.GROUPS) {
-      setGroupFilters([...groupFilters, filterText]);
-    } else {
-      throw new Error("Can not apply filter " + key + ". It's not supported");
-    }
+  const handleOnAddFilter = (key: string, filterText: string) => {
+    const filterKey: FilterKey = key as FilterKey;
+    setFiltersValue((current) => {
+      const values: string[] = current.get(filterKey) || [];
+      return new Map(current).set(filterKey, [...values, filterText]);
+    });
 
     handlePaginationChange({ page: 1 });
   };
 
-  const handleOnDeleteFilter = (
-    category: string | ToolbarChipGroup,
-    chip: ToolbarChip | string
-  ) => {
-    if (typeof chip !== "string") {
-      throw new Error("Can not delete filter. Chip must be a string");
-    }
-
-    let categoryKey: string;
-    if (typeof category === "string") {
-      categoryKey = category;
-    } else {
-      categoryKey = category.key;
-    }
-
-    if (categoryKey === FilterKey.EMAIL) {
-      setEmailFilters(emailFilters.filter((f) => f !== chip));
-    } else if (categoryKey === FilterKey.DISPLAY_NAME) {
-      setDisplayNameFilters(displayNameFilters.filter((f) => f !== chip));
-    } else if (categoryKey === FilterKey.JOB_FUNCTION) {
-      setJobFunctionFilters(jobFunctionFilters.filter((f) => f !== chip));
-    } else if (categoryKey === FilterKey.GROUPS) {
-      setJobFunctionFilters(groupFilters.filter((f) => f !== chip));
-    } else {
-      throw new Error(
-        "Can not delete chip. Chip " + chip + " is not supported"
-      );
-    }
-  };
-
-  const handleOnDeleteFilterGroup = (category: string | ToolbarChipGroup) => {
-    let categoryKey: string;
-    if (typeof category === "string") {
-      categoryKey = category;
-    } else {
-      categoryKey = category.key;
-    }
-
-    if (categoryKey === FilterKey.EMAIL) {
-      setEmailFilters([]);
-    } else if (categoryKey === FilterKey.DISPLAY_NAME) {
-      setDisplayNameFilters([]);
-    } else if (categoryKey === FilterKey.JOB_FUNCTION) {
-      setJobFunctionFilters([]);
-    } else if (categoryKey === FilterKey.GROUPS) {
-      setJobFunctionFilters([]);
-    } else {
-      throw new Error("Can not delete ChipGroup. ChipGroup is not supported");
-    }
+  const handleOnDeleteFilter = (key: string, value: string[]) => {
+    const filterKey: FilterKey = key as FilterKey;
+    setFiltersValue((current) => new Map(current).set(filterKey, value));
   };
 
   // Create Modal
@@ -394,70 +312,29 @@ export const Stakeholders: React.FC = () => {
           fetchError={fetchError}
           clearAllFilters={handleOnClearAllFilters}
           filtersApplied={
-            emailFilters.length +
-              displayNameFilters.length +
-              jobFunctionFilters.length +
-              groupFilters.length >
-            0
+            Array.from(filtersValue.values()).reduce(
+              (current, accumulator) => [...accumulator, ...current],
+              []
+            ).length > 0
           }
           toolbarToggle={
-            <ToolbarGroup variant="filter-group">
-              <ToolbarFilter
-                chips={emailFilters}
-                deleteChip={handleOnDeleteFilter}
-                deleteChipGroup={handleOnDeleteFilterGroup}
-                categoryName={{ key: FilterKey.EMAIL, name: t("terms.email") }}
-                showToolbarItem
-              >
-                {null}
-              </ToolbarFilter>
-              <ToolbarFilter
-                chips={displayNameFilters}
-                deleteChip={handleOnDeleteFilter}
-                deleteChipGroup={handleOnDeleteFilterGroup}
-                categoryName={{
-                  key: FilterKey.DISPLAY_NAME,
-                  name: t("terms.displayName"),
-                }}
-                showToolbarItem
-              >
-                {null}
-              </ToolbarFilter>
-              <ToolbarFilter
-                chips={jobFunctionFilters}
-                deleteChip={handleOnDeleteFilter}
-                deleteChipGroup={handleOnDeleteFilterGroup}
-                categoryName={{
-                  key: FilterKey.JOB_FUNCTION,
-                  name: t("terms.jobFunction"),
-                }}
-                showToolbarItem
-              >
-                {null}
-              </ToolbarFilter>
-              <ToolbarFilter
-                chips={groupFilters}
-                deleteChip={handleOnDeleteFilter}
-                deleteChipGroup={handleOnDeleteFilterGroup}
-                categoryName={{
-                  key: FilterKey.GROUPS,
-                  name: t("terms.group"),
-                }}
-                showToolbarItem
-              >
-                <SearchFilter
-                  options={filterOptions}
-                  onApplyFilter={handleOnFilterApplied}
-                />
-              </ToolbarFilter>
-            </ToolbarGroup>
+            <AppTableToolbarToggleGroup
+              options={filters}
+              filtersValue={filtersValue}
+              onDeleteFilter={handleOnDeleteFilter}
+            >
+              <SearchFilter
+                options={filters}
+                onApplyFilter={handleOnAddFilter}
+              />
+            </AppTableToolbarToggleGroup>
           }
           toolbar={
             <ToolbarGroup variant="button-group">
               <ToolbarItem>
                 <Button
                   type="button"
-                  aria-label="create-business-service"
+                  aria-label="create-stakeholder"
                   variant={ButtonVariant.primary}
                   onClick={handleOnOpenCreateNewModal}
                 >

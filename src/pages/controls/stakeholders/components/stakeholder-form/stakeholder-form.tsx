@@ -138,7 +138,7 @@ export const StakeholderForm: React.FC<StakeholderFormProps> = ({
         <FormGroup
           label={t("terms.displayName")}
           fieldId="displayName"
-          isRequired={false}
+          isRequired={true}
           validated={getValidatedFromError(formik.errors.displayName)}
           helperTextInvalid={formik.errors.displayName}
         >
@@ -147,7 +147,7 @@ export const StakeholderForm: React.FC<StakeholderFormProps> = ({
             name="displayName"
             aria-label="displayName"
             aria-describedby="displayName"
-            isRequired={false}
+            isRequired={true}
             onChange={onChangeField}
             onBlur={formik.handleBlur}
             value={formik.values.displayName}

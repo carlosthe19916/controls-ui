@@ -154,7 +154,12 @@ export const BusinessServices: React.FC = () => {
   const columns: ICell[] = [
     { title: t("terms.name"), transforms: [sortable, cellWidth(30)] },
     { title: t("terms.description"), transforms: [cellWidth(40)] },
-    { title: t("terms.owner"), transforms: [sortable] },
+    {
+      title: t("terms.owner"),
+      transforms: [
+        // sortable
+      ],
+    },
     {
       title: "",
       props: {
